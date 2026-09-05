@@ -40,13 +40,19 @@ O item "Painel Escolar" segue desabilitado na sidebar — chega na Sprint 06.
   de dados reais gravados desde as Sprints 03/04; sem disparo/interação
   ainda, os números aparecem zerados (nada de mock aqui, ao contrário do
   Dashboard da Sprint 02).
-- **Integração · Google Sheets** (RF-14, RF-15): formulário para o
-  Administrador configurar o ID da planilha e o intervalo consumido, e um
-  botão "Ler planilha agora" que chama a prova de conceito de leitura
-  (`GET /api/integrations/sheets/preview`) e mostra as linhas cruas — ou o
-  erro claro do backend quando a planilha ou a API key não estão
-  configuradas. A Equipe da Escola vê a configuração, mas só o
-  Administrador pode alterá-la.
+- **Integração · Google Sheets** (RF-14, RF-15): dois modos, alternados
+  por um seletor no topo do formulário —
+  - **Colar link**: cola a URL completa da planilha (o backend extrai o
+    ID sozinho) e o intervalo consumido;
+  - **Anexar arquivo**: envia um `.csv` exportado da planilha (Arquivo →
+    Fazer download → CSV, no Google Sheets ou Excel), para quem prefere
+    não compartilhar o link.
+
+  Nos dois casos, o botão "Ler planilha agora" chama a prova de conceito
+  de leitura (`GET /api/integrations/sheets/preview`) e mostra as linhas
+  cruas — ou o erro claro do backend quando nada está configurado. A
+  Equipe da Escola vê a configuração, mas só o Administrador pode
+  alterá-la (colar um link novo ou enviar um arquivo novo).
 
 ## Estrutura
 
