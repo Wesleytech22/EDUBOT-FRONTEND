@@ -6,6 +6,38 @@
   gap: 20px;
 }
 
+.int-mode-switch {
+  display: flex;
+  gap: 6px;
+  background: var(--alt);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  margin-bottom: 20px;
+  width: fit-content;
+}
+
+.int-mode-btn {
+  border: none;
+  background: transparent;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--t600);
+  cursor: pointer;
+}
+
+.int-mode-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.int-mode-btn-active {
+  background: #fff;
+  color: var(--b700);
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.12);
+}
+
 .int-success {
   color: var(--g600);
   font-size: 13px;
