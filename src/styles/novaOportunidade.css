@@ -1,0 +1,143 @@
+@import './tokens.css';
+
+.opp-breadcrumb {
+  margin: 0;
+  font-size: 12px;
+  color: var(--t400);
+}
+
+.opp-breadcrumb a {
+  color: var(--t400);
+  text-decoration: none;
+}
+
+.nova-opp-grid {
+  display: grid;
+  grid-template-columns: 1.7fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.nova-opp-form h3,
+.nova-opp-side h3 {
+  margin: 0 0 2px;
+  font-size: 16px;
+}
+
+.nova-opp-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+textarea.input {
+  resize: vertical;
+}
+
+.nova-opp-divider {
+  height: 1px;
+  background: var(--bd);
+  margin: 4px 0 16px;
+}
+
+.nova-opp-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.nova-opp-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.nova-opp-side {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.wa-chat {
+  background: var(--wa-chat);
+  border-radius: var(--radius-md);
+  padding: 14px;
+}
+
+.wa-bubble {
+  background: var(--wa-out);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.wa-bubble strong {
+  font-size: 12px;
+  color: var(--g600);
+}
+
+.wa-bubble p {
+  margin: 0;
+  font-size: 13px;
+  white-space: pre-wrap;
+  color: var(--t900);
+}
+
+.wa-time {
+  align-self: flex-end;
+  font-size: 10px;
+  color: var(--t400);
+}
+
+.nova-opp-confirm-list {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.nova-opp-confirm-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--t600);
+}
+
+.nova-opp-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 14px;
+  cursor: pointer;
+}
+
+.nova-opp-checkbox input {
+  margin-top: 2px;
+}
+
+.nova-opp-warning {
+  background: var(--a100);
+  color: var(--a600);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+@media (max-width: 960px) {
+  .nova-opp-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .nova-opp-row {
+    grid-template-columns: 1fr;
+  }
+}

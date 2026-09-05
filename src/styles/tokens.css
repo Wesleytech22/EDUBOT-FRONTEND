@@ -1,0 +1,27 @@
+/* Tokens extraídos do arquivo Figma do EduBot (edubot-figma/_prelude.js)
+   para que o painel implementado reproduza fielmente o MVP. */
+:root {
+  --canvas: #f1f4f9;
+  --surface: #ffffff;
+  --alt: #f7f9fc;
+  --navy: #1b2a5b;
+  --b700: #3a38a0;
+  --b600: #4a47b8;
+  --b100: #e8e7f8;
+  --g600: #3f8f4f;
+  --g100: #e3f1e6;
+  --a600: #b26a08;
+  --a100: #fbeedc;
+  --r600: #b42318;
+  --r100: #fde7e4;
+  --t900: #101828;
+  --t600: #475467;
+  --t400: #98a2b3;
+  --bd: #d6ddea;
+  --wa-out: #dcf8c6;
+  --wa-chat: #ece5dd;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --font: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}

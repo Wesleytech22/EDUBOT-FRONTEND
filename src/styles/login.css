@@ -1,0 +1,117 @@
+@import './tokens.css';
+
+.login-screen {
+  min-height: 100vh;
+  display: flex;
+}
+
+.login-hero {
+  flex: 1 1 40%;
+  background: var(--navy);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px;
+  gap: 20px;
+}
+
+.login-hero h1 {
+  font-size: 40px;
+  margin: 0;
+}
+
+.login-hero p {
+  font-size: 18px;
+  color: #dfe4f2;
+  margin: 0;
+  max-width: 420px;
+}
+
+.login-hero-badge {
+  align-self: flex-start;
+  background: var(--b700);
+  color: #fff;
+  border-radius: 999px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.login-form-wrap {
+  flex: 1 1 60%;
+  background: var(--canvas);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  background: #fff;
+  border-radius: var(--radius-md);
+  box-shadow: 0 20px 45px rgba(16, 24, 40, 0.08);
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+.login-card h2 {
+  margin: 0 0 6px;
+  font-size: 26px;
+}
+
+.login-subtitle {
+  margin: 0 0 24px;
+  color: var(--t600);
+  font-size: 14px;
+}
+
+.login-forgot {
+  font-size: 13px;
+  margin-bottom: 20px;
+  text-decoration: none;
+}
+
+.login-error {
+  margin: -8px 0 16px;
+}
+
+.login-submit {
+  width: 100%;
+  padding: 15px;
+  font-size: 15px;
+}
+
+.login-rf-notes {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--bd);
+  font-size: 11.5px;
+  color: var(--t400);
+  font-family: 'Courier New', monospace;
+}
+
+.login-rf-notes p {
+  margin: 4px 0;
+}
+
+@media (max-width: 860px) {
+  .login-screen {
+    flex-direction: column;
+  }
+
+  .login-hero {
+    padding: 32px 24px;
+  }
+
+  .login-form-wrap {
+    padding: 24px;
+  }
+
+  .login-card {
+    padding: 28px;
+  }
+}

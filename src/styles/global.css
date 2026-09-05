@@ -1,0 +1,143 @@
+@import './tokens.css';
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  color: var(--t900);
+  background: var(--canvas);
+  overflow-x: hidden;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+a {
+  color: var(--b600);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: var(--radius-sm);
+  padding: 13px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  transition: filter 0.15s ease;
+}
+
+.btn:hover {
+  filter: brightness(0.96);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--b600);
+  color: #fff;
+}
+
+.btn-secondary {
+  background: #fff;
+  border-color: var(--bd);
+  color: var(--t600);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--t600);
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--bd);
+  border-radius: var(--radius-md);
+  padding: 22px 24px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 16px;
+}
+
+.field label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--t600);
+}
+
+.field .hint {
+  font-size: 12px;
+  color: var(--t400);
+}
+
+.field .error {
+  font-size: 12px;
+  color: var(--r600);
+}
+
+.input,
+select.input,
+textarea.input {
+  width: 100%;
+  border: 1px solid var(--bd);
+  border-radius: var(--radius-sm);
+  padding: 13px 14px;
+  font-size: 14px;
+  color: var(--t900);
+  background: #fff;
+}
+
+.input:focus,
+select.input:focus,
+textarea.input:focus {
+  outline: 2px solid var(--b100);
+  border-color: var(--b600);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* garante nenhuma rolagem horizontal do documento (RNF-05) */
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
