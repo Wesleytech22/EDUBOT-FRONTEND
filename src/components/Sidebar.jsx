@@ -6,7 +6,7 @@ const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', end: true },
   { to: '/oportunidades', label: 'Oportunidades' },
   { to: '/metricas', label: 'Métricas' },
-  { to: '/painel-escolar', label: 'Painel Escolar', disabled: true },
+  { to: '/painel-escolar', label: 'Painel Escolar' },
   { to: '/integracao', label: 'Integração' },
 ];
 
@@ -17,24 +17,17 @@ export default function Sidebar() {
     <aside className="sidebar">
       <div className="sidebar-brand">EduBot</div>
       <nav className="sidebar-nav">
-        {NAV_ITEMS.map((item) =>
-          item.disabled ? (
-            <span key={item.to} className="nav-item nav-item-disabled" title="Chega na Sprint 06">
-              <span className="dot" />
-              {item.label}
-            </span>
-          ) : (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.end}
-              className={({ isActive }) => `nav-item${isActive ? ' nav-item-active' : ''}`}
-            >
-              <span className="dot" />
-              {item.label}
-            </NavLink>
-          )
-        )}
+        {NAV_ITEMS.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            end={item.end}
+            className={({ isActive }) => `nav-item${isActive ? ' nav-item-active' : ''}`}
+          >
+            <span className="dot" />
+            {item.label}
+          </NavLink>
+        ))}
       </nav>
       <button type="button" className="sidebar-logout" onClick={logout}>
         Sair

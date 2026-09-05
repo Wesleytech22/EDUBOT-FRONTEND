@@ -6,6 +6,7 @@ import NovaOportunidade from './pages/NovaOportunidade.jsx';
 import ResultadoDisparo from './pages/ResultadoDisparo.jsx';
 import Metricas from './pages/Metricas.jsx';
 import Integracao from './pages/Integracao.jsx';
+import PainelEscolar from './pages/PainelEscolar.jsx';
 import PrivateRoute from './components/PrivateRoute.jsx';
 
 export default function App() {
@@ -76,7 +77,15 @@ export default function App() {
         }
       />
 
-      {/* Painel Escolar fica para o merge da Sprint 06 */}
+      <Route
+        path="/painel-escolar"
+        element={
+          <PrivateRoute>
+            <PainelEscolar />
+          </PrivateRoute>
+        }
+      />
+
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

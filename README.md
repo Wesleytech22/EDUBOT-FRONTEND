@@ -1,9 +1,9 @@
 # EduBot — Frontend (branch de integração local)
 
-Painel React (Vite) com as telas do MVP das Sprints 02, 03 e 05 combinadas
-nesta branch (`feat/teste-integracao-geral`) para teste local ponta a
-ponta, antes do merge progressivo em `main`. Visual fiel aos mockups em
-`../documentos/EduBot_Telas_MVP.pptx`.
+Painel React (Vite) com as telas do MVP das Sprints 02, 03, 05 e 06
+combinadas nesta branch (`feat/teste-integracao-geral`) para teste local
+ponta a ponta, antes do merge progressivo em `main`. Visual fiel aos
+mockups em `../documentos/EduBot_Telas_MVP.pptx`.
 
 ## Como rodar
 
@@ -16,8 +16,9 @@ npm run dev            # http://localhost:5173
 Requer o backend (`../EDUCHAT_BACKEND`) rodando em `http://localhost:4000`
 (ou o endereço configurado em `VITE_API_URL`), na branch de integração
 correspondente (`feat/teste-integracao-geral` do backend, ou
-`feat/sprint05-metricas-sheets`/mais recente) — as telas de Métricas e
-Integração consomem `/api/metrics/overview` e `/api/integrations/sheets/*`.
+`feat/sprint06-sync-dashboard-escolar`/mais recente) — as telas desta
+branch consomem `/api/metrics/overview`, `/api/integrations/sheets/*` e
+`/api/students/*`.
 
 ## Telas
 
@@ -29,10 +30,11 @@ Integração consomem `/api/metrics/overview` e `/api/integrations/sheets/*`.
 | 04 — Nova/Editar Oportunidade | `/oportunidades/nova`, `/oportunidades/:id/editar` (protegida) | Backend real; pré-visualização da mensagem é client-side (binding em tempo real) |
 | 05 — Resultado do Disparo | `/oportunidades/:id/disparo` (protegida) | Backend real — consome `GET /opportunities/:id/dispatch-logs` (RF-06), criado na Sprint 03 do backend |
 | 06 — Métricas de Engajamento | `/metricas` (protegida) | Backend real — `GET /api/metrics/overview` (RF-12, RF-13) |
+| 07 — Painel Escolar | `/painel-escolar` (protegida) | Backend real — `GET /api/students`, `/summary`, `/sync-status` e `POST /sync` (RF-16 a RF-19) |
 | 08 — Integração · Google Sheets | `/integracao` (protegida) | Backend real — `GET/PUT /api/integrations/sheets/config`, `GET /api/integrations/sheets/preview` (RF-14, RF-15) |
 
-O item "Painel Escolar" segue desabilitado na sidebar até o merge da
-Sprint 06 nesta branch.
+Todos os itens da sidebar estão habilitados nesta branch — é a primeira
+vez que as telas 05 a 08 aparecem juntas para teste.
 
 ## Sprint 03 — Resultado do Disparo
 
@@ -62,6 +64,19 @@ Sprint não expõe esse endpoint, então a tela só exibe o que já aconteceu
   configuradas. A Equipe da Escola vê a configuração, mas só o
   Administrador pode alterá-la.
 
+## Sprint 06 — Painel Escolar
+
+- Banner de somente leitura logo no topo (a plataforma consome a planilha
+  da escola, mas nunca escreve nela — seção 5.7 do Documento de Escopo).
+- Indicadores agregados (RF-19): total de alunos, frequência média e
+  "desempenho geral" (percentual de alunos em situação Regular).
+- Status da sincronização (RF-17): data/hora da última sincronização
+  bem-sucedida, e o motivo quando a última tentativa falhou.
+- Botão "Sincronizar agora" (RF-16), visível só para o Administrador —
+  a Equipe da Escola consulta em modo somente leitura, sem forçar a
+  sincronização.
+- Listagem com busca por nome e filtros por série e situação (RF-18).
+
 ## Estrutura
 
 ```
@@ -80,10 +95,11 @@ src/
     NovaOportunidade.jsx
     ResultadoDisparo.jsx        # Tela 05 — Sprint 03
     Metricas.jsx                # Tela 06 — Sprint 05
+    PainelEscolar.jsx           # Tela 07 — Sprint 06
     Integracao.jsx              # Tela 08 — Sprint 05
   styles/
     tokens.css                  # paleta extraída do Figma do EduBot
     global.css, layout.css, login.css, dashboard.css,
     oportunidades.css, novaOportunidade.css, resultadoDisparo.css,
-    metricas.css, integracao.css
+    metricas.css, painelEscolar.css, integracao.css
 ```
