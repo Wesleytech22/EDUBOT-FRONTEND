@@ -5,9 +5,9 @@ import '../styles/layout.css';
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', end: true },
   { to: '/oportunidades', label: 'Oportunidades' },
-  { to: '/metricas', label: 'Métricas', disabled: true },
+  { to: '/metricas', label: 'Métricas' },
   { to: '/painel-escolar', label: 'Painel Escolar', disabled: true },
-  { to: '/integracao', label: 'Integração', disabled: true },
+  { to: '/integracao', label: 'Integração' },
 ];
 
 export default function Sidebar() {
@@ -19,7 +19,7 @@ export default function Sidebar() {
       <nav className="sidebar-nav">
         {NAV_ITEMS.map((item) =>
           item.disabled ? (
-            <span key={item.to} className="nav-item nav-item-disabled" title="Fora do escopo da Sprint 02">
+            <span key={item.to} className="nav-item nav-item-disabled" title="Chega na Sprint 06">
               <span className="dot" />
               {item.label}
             </span>
