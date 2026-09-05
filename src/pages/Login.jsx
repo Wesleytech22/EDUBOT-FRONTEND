@@ -9,6 +9,7 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -49,15 +50,35 @@ export default function Login() {
 
           <div className="field">
             <label htmlFor="password">Senha</label>
-            <input
-              id="password"
-              className="input"
-              type="password"
-              placeholder="••••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <div className="password-field">
+              <input
+                id="password"
+                className="input"
+                type={showPassword ? 'text' : 'password'}
+                placeholder="••••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                title={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+              >
+                {showPassword ? (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                    <path d="M3 3l18 18M10.58 10.58a2 2 0 002.83 2.83M9.36 5.11A9.94 9.94 0 0112 5c5 0 9 4.5 10 7-.42 1.13-1.16 2.34-2.17 3.44M6.53 6.53C4.6 7.9 3.08 9.77 2 12c1 2.5 5 7 10 7 1.29 0 2.5-.24 3.6-.67" />
+                  </svg>
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                )}
+              </button>
+            </div>
           </div>
 
           <a className="login-forgot" href="#" onClick={(e) => e.preventDefault()}>
