@@ -54,7 +54,7 @@ export default function Oportunidades() {
     setActionError('');
     try {
       await api.patch(`/opportunities/${id}/dispatch`);
-      load();
+      navigate(`/oportunidades/${id}/disparo`);
     } catch (err) {
       setActionError(err.response?.data?.error || 'Não foi possível disparar esta oportunidade.');
     }

@@ -100,9 +100,9 @@ export default function NovaOportunidade() {
     setServerError('');
     try {
       const saved = await persist({ ...form, isDraft: false });
-      // RF-05 restrito à Sprint 02: apenas atualiza status no banco (sem N8N/WAHA real).
+      // RF-04/RF-05 (Sprint 03): aciona o webhook do N8N e cria o log de envio.
       await api.patch(`/opportunities/${saved.id}/dispatch`);
-      navigate('/oportunidades');
+      navigate(`/oportunidades/${saved.id}/disparo`);
     } catch (err) {
       setServerError(err.response?.data?.error || 'Não foi possível disparar esta oportunidade.');
     } finally {
@@ -223,7 +223,7 @@ export default function NovaOportunidade() {
         <div className="nova-opp-side">
           <div className="card">
             <h3>Pré-visualização da mensagem</h3>
-            <p className="opp-hint">RF-05 · texto que será enviado pelo fluxo do N8N via WAHA (na Sprint 03)</p>
+            <p className="opp-hint">RF-05 · texto enviado pelo fluxo do N8N via WAHA</p>
             <div className="wa-chat">
               <div className="wa-bubble">
                 <strong>EduBot · E. E. Jardim União</strong>
@@ -239,7 +239,7 @@ export default function NovaOportunidade() {
             <ul className="nova-opp-confirm-list">
               <li><span className="dot" style={{ background: 'var(--g600)' }} /> Contatos com opt-in ativo receberão a mensagem</li>
               <li><span className="dot" style={{ background: 'var(--t400)' }} /> Envio imediato após a confirmação</li>
-              <li><span className="dot" style={{ background: 'var(--t400)' }} /> O log de entrega é registrado por contato · RF-07</li>
+              <li><span className="dot" style={{ background: 'var(--t400)' }} /> O log de entrega é registrado por contato · RF-06</li>
             </ul>
             <label className="nova-opp-checkbox">
               <input type="checkbox" checked={confirmChecked} onChange={(e) => setConfirmChecked(e.target.checked)} />

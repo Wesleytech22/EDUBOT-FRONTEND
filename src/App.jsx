@@ -3,6 +3,7 @@ import Login from './pages/Login.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Oportunidades from './pages/Oportunidades.jsx';
 import NovaOportunidade from './pages/NovaOportunidade.jsx';
+import ResultadoDisparo from './pages/ResultadoDisparo.jsx';
 import PrivateRoute from './components/PrivateRoute.jsx';
 
 export default function App() {
@@ -42,6 +43,15 @@ export default function App() {
         element={
           <PrivateRoute>
             <NovaOportunidade />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/oportunidades/:id/disparo"
+        element={
+          <PrivateRoute>
+            <ResultadoDisparo />
           </PrivateRoute>
         }
       />
