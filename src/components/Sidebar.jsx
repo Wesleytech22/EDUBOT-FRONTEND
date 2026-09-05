@@ -6,7 +6,7 @@ const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', end: true },
   { to: '/oportunidades', label: 'Oportunidades' },
   { to: '/metricas', label: 'Métricas', disabled: true },
-  { to: '/painel-escolar', label: 'Painel Escolar', disabled: true },
+  { to: '/painel-escolar', label: 'Painel Escolar' },
   { to: '/integracao', label: 'Integração', disabled: true },
 ];
 
@@ -19,7 +19,7 @@ export default function Sidebar() {
       <nav className="sidebar-nav">
         {NAV_ITEMS.map((item) =>
           item.disabled ? (
-            <span key={item.to} className="nav-item nav-item-disabled" title="Fora do escopo da Sprint 02">
+            <span key={item.to} className="nav-item nav-item-disabled" title="Disponível na branch feat/sprint05-metricas-integracao">
               <span className="dot" />
               {item.label}
             </span>

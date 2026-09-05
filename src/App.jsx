@@ -3,6 +3,7 @@ import Login from './pages/Login.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Oportunidades from './pages/Oportunidades.jsx';
 import NovaOportunidade from './pages/NovaOportunidade.jsx';
+import PainelEscolar from './pages/PainelEscolar.jsx';
 import PrivateRoute from './components/PrivateRoute.jsx';
 
 export default function App() {
@@ -46,7 +47,16 @@ export default function App() {
         }
       />
 
-      {/* Métricas, Painel Escolar e Integração ficam para as Sprints 05/06 */}
+      <Route
+        path="/painel-escolar"
+        element={
+          <PrivateRoute>
+            <PainelEscolar />
+          </PrivateRoute>
+        }
+      />
+
+      {/* Métricas e Integração ficam na branch feat/sprint05-metricas-integracao */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
