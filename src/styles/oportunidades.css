@@ -1,0 +1,96 @@
+@import './tokens.css';
+
+.opp-toolbar {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.opp-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  padding: 16px 20px;
+}
+
+.opp-search {
+  flex: 2 1 260px;
+}
+
+.opp-filters select {
+  flex: 1 1 180px;
+}
+
+.opp-hint {
+  margin: 0 0 16px;
+  font-size: 12px;
+  color: var(--t400);
+}
+
+.opp-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+
+.opp-table th {
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--t600);
+  background: var(--alt);
+  padding: 11px 12px;
+}
+
+.opp-table td {
+  padding: 13px 12px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--bd);
+  color: var(--t600);
+}
+
+.opp-actions {
+  display: flex;
+  gap: 16px;
+}
+
+.opp-actions a {
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.opp-link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--b600);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.opp-link-btn:disabled {
+  color: var(--t400);
+  cursor: not-allowed;
+}
+
+.opp-action-disabled {
+  font-size: 13px;
+  color: var(--t400);
+}
+
+.opp-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--t400);
+}
+
+@media (max-width: 640px) {
+  .opp-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
