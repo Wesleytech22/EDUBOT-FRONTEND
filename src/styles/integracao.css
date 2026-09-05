@@ -1,0 +1,32 @@
+@import './tokens.css';
+
+.int-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.int-success {
+  color: var(--g600);
+  font-size: 13px;
+  margin: 0;
+}
+
+.int-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 420px;
+}
+
+.int-table td {
+  padding: 10px 12px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--bd);
+  color: var(--t600);
+}
+
+@media (max-width: 900px) {
+  .int-grid {
+    grid-template-columns: 1fr;
+  }
+}
