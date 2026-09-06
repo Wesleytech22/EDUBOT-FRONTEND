@@ -2,8 +2,10 @@
 
 Painel React (Vite) com as telas do MVP das Sprints 02, 03, 05 e 06
 combinadas nesta branch (`feat/teste-integracao-geral`) para teste local
-ponta a ponta, antes do merge progressivo em `main`. Visual fiel aos
-mockups em `../documentos/EduBot_Telas_MVP.pptx`.
+ponta a ponta, antes do merge progressivo em `main`. O Dashboard (Tela 02)
+também já não usa dado mock — lê métricas e painel escolar reais, como o
+resto da plataforma. Visual fiel aos mockups em
+`../documentos/EduBot_Telas_MVP.pptx`.
 
 ## Como rodar
 
@@ -17,15 +19,15 @@ Requer o backend (`../EDUCHAT_BACKEND`) rodando em `http://localhost:4000`
 (ou o endereço configurado em `VITE_API_URL`), na branch de integração
 correspondente (`feat/teste-integracao-geral` do backend, ou
 `feat/sprint06-sync-dashboard-escolar`/mais recente) — as telas desta
-branch consomem `/api/metrics/overview`, `/api/integrations/sheets/*` e
-`/api/students/*`.
+branch consomem `/api/metrics/overview`, `/api/metrics/dispatch-logs`,
+`/api/integrations/sheets/*` e `/api/students/*`.
 
 ## Telas
 
 | Tela | Rota | Fonte de dados |
 |---|---|---|
 | 01 — Login | `/login` | Backend real (`POST /api/auth/login`) |
-| 02 — Dashboard | `/` (protegida) | **Mock** — indicadores estáticos, conforme retro (slide 8) |
+| 02 — Dashboard | `/` (protegida) | **Real** — `GET /api/metrics/overview`, `/api/students/summary`, `/api/students/sync-status` e `/api/metrics/dispatch-logs` (RF-12, RF-13, RF-17, RF-19) |
 | 03 — Oportunidades | `/oportunidades` (protegida) | Backend real, com busca e filtros |
 | 04 — Nova/Editar Oportunidade | `/oportunidades/nova`, `/oportunidades/:id/editar` (protegida) | Backend real; pré-visualização da mensagem é client-side (binding em tempo real) |
 | 05 — Resultado do Disparo | `/oportunidades/:id/disparo` (protegida) | Backend real — consome `GET /opportunities/:id/dispatch-logs` (RF-06), criado na Sprint 03 do backend |
@@ -54,8 +56,8 @@ Sprint não expõe esse endpoint, então a tela só exibe o que já aconteceu
   taxa de resposta, encaminhadas a atendente), além do ranking de
   oportunidades por engajamento e das dúvidas mais frequentes — tudo vem
   de dados reais gravados desde as Sprints 03/04; sem disparo/interação
-  ainda, os números aparecem zerados (nada de mock aqui, ao contrário do
-  Dashboard da Sprint 02).
+  ainda, os números aparecem zerados (nada de mock aqui — o Dashboard
+  também já não usa dado fictício, ver seção "Dashboard sem mock" abaixo).
 - **Integração · Google Sheets** (RF-14, RF-15): dois modos, alternados
   por um seletor no topo do formulário —
   - **Colar link**: cola a URL completa da planilha (o backend extrai o
@@ -83,6 +85,25 @@ Sprint não expõe esse endpoint, então a tela só exibe o que já aconteceu
   sincronização.
 - Listagem com busca por nome e filtros por série e situação (RF-18).
 
+## Dashboard sem mock
+
+Nenhum card mostra número fixo. Enquanto não houver disparos, interações
+ou sincronização registrados, o dashboard reflete isso honestamente:
+
+- KPIs de envio (notificações, contatos alcançados, taxa de entrega) e de
+  interação (FAQ) vêm de `GET /api/metrics/overview` — aparecem `0` até
+  que algo aconteça de verdade.
+- "Oportunidades com maior engajamento" some e vira uma mensagem
+  ("ainda não há...") quando não há dados suficientes para ranquear, em
+  vez de mostrar barras fictícias.
+- "Painel escolar" mostra frequência média e desempenho real
+  (`GET /api/students/summary`) e o status real da última sincronização
+  (`GET /api/students/sync-status`) — inclusive quando ainda não houve
+  nenhuma sincronização bem-sucedida.
+- "Últimos disparos" agrupa `GET /api/metrics/dispatch-logs` (o log por
+  contato) em uma linha por oportunidade, mostrando as 5 mais recentes —
+  ou uma mensagem vazia, se nada foi disparado ainda.
+
 ## Estrutura
 
 ```
@@ -96,7 +117,7 @@ src/
     Layout.jsx / Sidebar.jsx / Topbar.jsx
   pages/
     Login.jsx
-    Dashboard.jsx
+    Dashboard.jsx                # agora com dados reais, sem mock
     Oportunidades.jsx
     NovaOportunidade.jsx
     ResultadoDisparo.jsx        # Tela 05 — Sprint 03
