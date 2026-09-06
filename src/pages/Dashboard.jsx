@@ -1,37 +1,102 @@
+import { useEffect, useState } from 'react';
 import Layout from '../components/Layout.jsx';
+import api from '../services/api.js';
 import '../styles/dashboard.css';
 
-// MOCK DATA ONLY — SPRINT 02 (ver retro, slide 8 e documentos/E-Kanban-Sprint02.md).
-// A leitura real via API (Google Sheets / métricas de envio) fica para as
-// Sprints 05 e 06. Aqui o objetivo técnico é apenas a rota protegida e a
-// renderização do componente principal do React.
-const KPIS = [
-  { value: '1.2k', label: 'Notificações enviadas', ref: 'RF-12' },
-  { value: '98%', label: 'Contatos alcançados', ref: 'RF-12' },
-  { value: '200+', label: 'Contatos com opt-in', ref: 'RF-10' },
-  { value: '150', label: 'Interações no FAQ', ref: 'RF-13' },
-];
+function formatDateTime(value) {
+  if (!value) return '—';
+  return new Date(value).toLocaleString('pt-BR');
+}
 
-const ENGAGEMENT = [
-  { title: 'Bolsa Integral ETEC 2027', pct: 92 },
-  { title: 'Curso Técnico em Informática', pct: 84 },
-  { title: 'Edital PROUNI 2027', pct: 71 },
-  { title: 'Curso de Inglês Gratuito', pct: 63 },
-  { title: 'Programa Jovem Aprendiz', pct: 48 },
-  { title: 'Feira de Profissões', pct: 35 },
-];
+// Agrupa o log de envio (por contato) em uma linha por oportunidade, para
+// a tabela "Últimos disparos" — mesma ideia da Tela 05, mas cruzando todas
+// as oportunidades em vez de uma só.
+function groupDispatchLogsByOpportunity(items) {
+  const byOpportunity = new Map();
 
-const DISPATCHES = [
-  { title: 'Bolsa Integral ETEC 2027', sent: 212, delivered: 208, failed: 4, date: '24/09 09:12' },
-  { title: 'Curso Técnico em Informática', sent: 212, delivered: 211, failed: 1, date: '18/09 14:03' },
-  { title: 'Edital PROUNI 2027', sent: 205, delivered: 199, failed: 6, date: '11/09 08:47' },
-];
+  for (const log of items) {
+    const key = log.opportunity.id;
+    if (!byOpportunity.has(key)) {
+      byOpportunity.set(key, {
+        title: log.opportunity.title,
+        sent: 0,
+        delivered: 0,
+        failed: 0,
+        lastAt: log.createdAt,
+      });
+    }
+    const group = byOpportunity.get(key);
+    group.sent += 1;
+    if (log.status === 'enviado') group.delivered += 1;
+    if (log.status === 'falha') group.failed += 1;
+    if (new Date(log.createdAt) > new Date(group.lastAt)) group.lastAt = log.createdAt;
+  }
 
+  return Array.from(byOpportunity.values())
+    .sort((a, b) => new Date(b.lastAt) - new Date(a.lastAt))
+    .slice(0, 5);
+}
+
+// Dashboard com dados reais (RF-12, RF-13, RF-17, RF-19) — sem nenhum
+// número fixo: enquanto o sistema não tiver disparos, interações ou uma
+// sincronização, os cards aparecem zerados ou com uma mensagem de "ainda
+// sem dados", nunca com um valor inventado.
 export default function Dashboard() {
+  const [metrics, setMetrics] = useState(null);
+  const [schoolSummary, setSchoolSummary] = useState(null);
+  const [syncStatus, setSyncStatus] = useState(null);
+  const [dispatchGroups, setDispatchGroups] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const [metricsRes, summaryRes, syncRes, logsRes] = await Promise.all([
+          api.get('/metrics/overview'),
+          api.get('/students/summary'),
+          api.get('/students/sync-status'),
+          api.get('/metrics/dispatch-logs'),
+        ]);
+        setMetrics(metricsRes.data);
+        setSchoolSummary(summaryRes.data);
+        setSyncStatus(syncRes.data);
+        setDispatchGroups(groupDispatchLogsByOpportunity(logsRes.data.items));
+      } catch (err) {
+        setError(err.response?.data?.error || 'Não foi possível carregar o dashboard.');
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  if (loading) {
+    return (
+      <Layout title="Dashboard">
+        <p className="opp-hint">Carregando…</p>
+      </Layout>
+    );
+  }
+
+  if (error) {
+    return (
+      <Layout title="Dashboard">
+        <p className="field error">{error}</p>
+      </Layout>
+    );
+  }
+
+  const kpis = [
+    { value: metrics.dispatch.totalNotifications, label: 'Notificações enviadas', ref: 'RF-12' },
+    { value: metrics.dispatch.contactsReached, label: 'Contatos alcançados', ref: 'RF-12' },
+    { value: `${metrics.dispatch.deliveryRate}%`, label: 'Taxa de entrega', ref: 'RF-12' },
+    { value: metrics.chatbot.totalInteractions, label: 'Interações no FAQ', ref: 'RF-13' },
+  ];
+
   return (
     <Layout title="Dashboard">
       <div className="dash-kpis">
-        {KPIS.map((kpi) => (
+        {kpis.map((kpi) => (
           <div className="card dash-kpi" key={kpi.label}>
             <strong>{kpi.value}</strong>
             <span>{kpi.label}</span>
@@ -43,38 +108,49 @@ export default function Dashboard() {
       <div className="dash-mid">
         <div className="card">
           <h3>Oportunidades com maior engajamento</h3>
-          <p className="dash-hint">RF-13 · taxa de resposta por oportunidade</p>
-          <div className="dash-bars">
-            {ENGAGEMENT.map((item) => (
-              <div className="dash-bar-row" key={item.title}>
-                <span className="dash-bar-label">{item.title}</span>
-                <div className="dash-bar-track">
-                  <div className="dash-bar-fill" style={{ width: `${item.pct}%` }} />
+          <p className="dash-hint">RF-13 · perguntas recebidas ÷ contatos que a receberam</p>
+          {metrics.chatbot.topEngagementOpportunities.length === 0 ? (
+            <p className="opp-hint">Ainda não há disparos com interação suficiente para ranquear.</p>
+          ) : (
+            <div className="dash-bars">
+              {metrics.chatbot.topEngagementOpportunities.map((item) => (
+                <div className="dash-bar-row" key={item.id}>
+                  <span className="dash-bar-label">{item.title}</span>
+                  <div className="dash-bar-track">
+                    <div className="dash-bar-fill" style={{ width: `${item.engagementRate}%` }} />
+                  </div>
+                  <span className="dash-bar-pct">{item.engagementRate}%</span>
                 </div>
-                <span className="dash-bar-pct">{item.pct}%</span>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="card">
           <h3>Painel escolar</h3>
-          <p className="dash-hint">RF-18 e RF-19 · dados lidos do Google Sheets</p>
+          <p className="dash-hint">RF-18 e RF-19 · dados lidos da planilha da escola</p>
           <div className="dash-school-kpis">
             <div>
-              <strong>92%</strong>
+              <strong>{schoolSummary.averageAttendance}%</strong>
               <span>Frequência média</span>
             </div>
             <div>
-              <strong>88%</strong>
+              <strong>{schoolSummary.regularRate}%</strong>
               <span>Desempenho geral</span>
             </div>
           </div>
-          <div className="dash-sync-banner">
-            <span className="dot" style={{ background: 'var(--g600)' }} />
-            Sincronizado às 07:40 de hoje · RF-17
-          </div>
-          <p className="dash-school-count">318 alunos na base sincronizada</p>
+          {syncStatus.lastSuccessfulSyncAt ? (
+            <div className="dash-sync-banner">
+              <span className="dot" style={{ background: 'var(--g600)' }} />
+              Sincronizado em {formatDateTime(syncStatus.lastSuccessfulSyncAt)} · RF-17
+            </div>
+          ) : (
+            <div className="dash-sync-banner" style={{ background: 'var(--alt)', color: 'var(--t600)' }}>
+              <span className="dot" style={{ background: 'var(--t400)' }} />
+              Ainda sem sincronização bem-sucedida · RF-17
+            </div>
+          )}
+          <p className="dash-school-count">{schoolSummary.totalStudents} aluno(s) na base sincronizada</p>
           <p className="dash-hint">Somente leitura — a planilha da escola permanece a única fonte de escrita.</p>
         </div>
       </div>
@@ -82,30 +158,34 @@ export default function Dashboard() {
       <div className="card">
         <h3>Últimos disparos</h3>
         <p className="dash-hint">RF-06 · log de envio com status de entrega</p>
-        <div className="table-scroll">
-          <table className="dash-table">
-            <thead>
-              <tr>
-                <th>Oportunidade</th>
-                <th>Enviados</th>
-                <th>Entregues</th>
-                <th>Falhas</th>
-                <th>Data</th>
-              </tr>
-            </thead>
-            <tbody>
-              {DISPATCHES.map((row) => (
-                <tr key={row.title}>
-                  <td>{row.title}</td>
-                  <td>{row.sent}</td>
-                  <td>{row.delivered}</td>
-                  <td>{row.failed}</td>
-                  <td>{row.date}</td>
+        {dispatchGroups.length === 0 ? (
+          <p className="opp-hint">Nenhum disparo realizado ainda.</p>
+        ) : (
+          <div className="table-scroll">
+            <table className="dash-table">
+              <thead>
+                <tr>
+                  <th>Oportunidade</th>
+                  <th>Enviados</th>
+                  <th>Entregues</th>
+                  <th>Falhas</th>
+                  <th>Data</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {dispatchGroups.map((row) => (
+                  <tr key={row.title}>
+                    <td>{row.title}</td>
+                    <td>{row.sent}</td>
+                    <td>{row.delivered}</td>
+                    <td>{row.failed}</td>
+                    <td>{formatDateTime(row.lastAt)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </Layout>
   );
