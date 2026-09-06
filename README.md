@@ -43,7 +43,9 @@ Requer o backend (`../EDUCHAT_BACKEND`) rodando em `http://localhost:4000`
 - Botão "Sincronizar agora" (RF-16), visível só para o Administrador —
   a Equipe da Escola consulta em modo somente leitura, sem forçar a
   sincronização.
-- Listagem com busca por nome e filtros por série e situação (RF-18).
+- Listagem com busca por nome e filtros por série e situação (RF-18),
+  mostrando presenças e faltas ao lado da frequência (%) já calculada —
+  a coordenação nunca digita a porcentagem diretamente.
 
 ## Estrutura
 

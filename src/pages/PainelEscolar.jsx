@@ -165,7 +165,9 @@ export default function PainelEscolar() {
 
       <div className="card">
         <h3>Alunos</h3>
-        <p className="opp-hint">RF-18 · nome, série, frequência, situação e data da última atualização</p>
+        <p className="opp-hint">
+          RF-18 · nome, série, presenças/faltas, frequência calculada, situação e última atualização
+        </p>
 
         {error && <p className="field error">{error}</p>}
         {loading && <p className="opp-hint">Carregando…</p>}
@@ -181,6 +183,8 @@ export default function PainelEscolar() {
                 <tr>
                   <th>Nome</th>
                   <th>Série</th>
+                  <th>Presenças</th>
+                  <th>Faltas</th>
                   <th>Frequência</th>
                   <th>Situação</th>
                   <th>Última atualização</th>
@@ -193,6 +197,8 @@ export default function PainelEscolar() {
                     <tr key={s.id}>
                       <td>{s.name}</td>
                       <td>{s.grade}</td>
+                      <td>{s.attendancePresent}</td>
+                      <td>{s.attendanceAbsent}</td>
                       <td>{s.attendance}%</td>
                       <td>
                         <span className="badge" style={{ background: style.bg, color: style.fg }}>
