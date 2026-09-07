@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout.jsx';
+import { useAuth } from '../context/AuthContext.jsx';
 import api from '../services/api.js';
 import '../styles/oportunidades.css';
 
@@ -17,6 +18,8 @@ function formatDate(value) {
 
 export default function Oportunidades() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'administrador';
   const [items, setItems] = useState([]);
   const [audiences, setAudiences] = useState(['Todos']);
   const [search, setSearch] = useState('');
@@ -70,11 +73,13 @@ export default function Oportunidades() {
     <Layout
       title="Oportunidades"
       headerAction={
-        <div className="opp-toolbar">
-          <button type="button" className="btn btn-primary" onClick={() => navigate('/oportunidades/nova')}>
-            Nova oportunidade
-          </button>
-        </div>
+        isAdmin && (
+          <div className="opp-toolbar">
+            <button type="button" className="btn btn-primary" onClick={() => navigate('/oportunidades/nova')}>
+              Nova oportunidade
+            </button>
+          </div>
+        )
       }
     >
       <div className="card opp-filters">
@@ -145,19 +150,25 @@ export default function Oportunidades() {
                       </td>
                       <td>{o.dispatchedAt ? formatDate(o.dispatchedAt) : 'Não enviada'}</td>
                       <td className="opp-actions">
-                        <Link to={`/oportunidades/${o.id}/editar`}>Editar</Link>
-                        {isEncerrada ? (
-                          <span className="opp-action-disabled">Ver histórico</span>
+                        {isAdmin ? (
+                          <>
+                            <Link to={`/oportunidades/${o.id}/editar`}>Editar</Link>
+                            {isEncerrada ? (
+                              <span className="opp-action-disabled">Ver histórico</span>
+                            ) : (
+                              <button
+                                type="button"
+                                className="opp-link-btn"
+                                disabled={isRascunho}
+                                title={isRascunho ? 'Salve e dispare pelo formulário da oportunidade' : ''}
+                                onClick={() => handleDispatch(o.id)}
+                              >
+                                Disparar
+                              </button>
+                            )}
+                          </>
                         ) : (
-                          <button
-                            type="button"
-                            className="opp-link-btn"
-                            disabled={isRascunho}
-                            title={isRascunho ? 'Salve e dispare pelo formulário da oportunidade' : ''}
-                            onClick={() => handleDispatch(o.id)}
-                          >
-                            Disparar
-                          </button>
+                          <span className="opp-action-disabled">Somente leitura</span>
                         )}
                       </td>
                     </tr>

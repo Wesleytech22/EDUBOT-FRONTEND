@@ -31,7 +31,7 @@ export default function App() {
       <Route
         path="/oportunidades/nova"
         element={
-          <PrivateRoute>
+          <PrivateRoute roles={['administrador']}>
             <NovaOportunidade />
           </PrivateRoute>
         }
@@ -40,7 +40,7 @@ export default function App() {
       <Route
         path="/oportunidades/:id/editar"
         element={
-          <PrivateRoute>
+          <PrivateRoute roles={['administrador']}>
             <NovaOportunidade />
           </PrivateRoute>
         }
