@@ -1,14 +1,16 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import '../styles/login.css';
 
 export default function Login() {
   const { login, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const resetSuccess = Boolean(location.state?.resetSuccess);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -60,10 +62,15 @@ export default function Login() {
             />
           </div>
 
-          <a className="login-forgot" href="#" onClick={(e) => e.preventDefault()}>
+          <Link className="login-forgot" to="/esqueci-senha">
             Esqueci minha senha
-          </a>
+          </Link>
 
+          {resetSuccess && (
+            <p className="field login-error" style={{ color: 'var(--g600)' }}>
+              Senha redefinida com sucesso. Entre com a nova senha.
+            </p>
+          )}
           {error && <p className="field error login-error">{error}</p>}
 
           <button type="submit" className="btn btn-primary login-submit" disabled={loading}>

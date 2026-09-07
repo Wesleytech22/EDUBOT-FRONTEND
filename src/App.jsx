@@ -1,5 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login.jsx';
+import EsqueciSenha from './pages/EsqueciSenha.jsx';
+import RedefinirSenha from './pages/RedefinirSenha.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Oportunidades from './pages/Oportunidades.jsx';
 import NovaOportunidade from './pages/NovaOportunidade.jsx';
@@ -9,6 +11,8 @@ export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/esqueci-senha" element={<EsqueciSenha />} />
+      <Route path="/redefinir-senha" element={<RedefinirSenha />} />
 
       <Route
         path="/"
