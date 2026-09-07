@@ -3,6 +3,11 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import '../styles/login.css';
 
+const LOGOUT_REASON_MESSAGES = {
+  inactivity: 'Sua sessão foi encerrada por inatividade. Faça login novamente.',
+  expired: 'Sua sessão expirou. Faça login novamente.',
+};
+
 export default function Login() {
   const { login, loading } = useAuth();
   const navigate = useNavigate();
@@ -11,6 +16,11 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const resetSuccess = Boolean(location.state?.resetSuccess);
+  const [logoutMessage] = useState(() => {
+    const reason = localStorage.getItem('edubot_logout_reason');
+    localStorage.removeItem('edubot_logout_reason');
+    return LOGOUT_REASON_MESSAGES[reason] || '';
+  });
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -71,6 +81,7 @@ export default function Login() {
               Senha redefinida com sucesso. Entre com a nova senha.
             </p>
           )}
+          {logoutMessage && <p className="field login-error">{logoutMessage}</p>}
           {error && <p className="field error login-error">{error}</p>}
 
           <button type="submit" className="btn btn-primary login-submit" disabled={loading}>

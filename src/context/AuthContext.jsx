@@ -1,7 +1,12 @@
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import api from '../services/api';
 
 const AuthContext = createContext(null);
+
+// RF-21 — encerra a sessão automaticamente após inatividade (sem cliques,
+// teclas, scroll ou toques), mesmo sem nenhuma chamada à API acontecer.
+const INACTIVITY_TIMEOUT_MS = (Number(import.meta.env.VITE_INACTIVITY_TIMEOUT_MINUTES) || 30) * 60 * 1000;
+const ACTIVITY_EVENTS = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart'];
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
@@ -30,10 +35,34 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  const logout = useCallback(() => {
+  const logout = useCallback((reason) => {
     localStorage.removeItem('edubot_token');
+    if (reason) {
+      localStorage.setItem('edubot_logout_reason', reason);
+    }
     setUser(null);
   }, []);
+
+  const logoutRef = useRef(logout);
+  logoutRef.current = logout;
+
+  useEffect(() => {
+    if (!user) return undefined;
+
+    let timer;
+    const resetTimer = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => logoutRef.current('inactivity'), INACTIVITY_TIMEOUT_MS);
+    };
+
+    ACTIVITY_EVENTS.forEach((event) => window.addEventListener(event, resetTimer));
+    resetTimer();
+
+    return () => {
+      clearTimeout(timer);
+      ACTIVITY_EVENTS.forEach((event) => window.removeEventListener(event, resetTimer));
+    };
+  }, [user]);
 
   return (
     <AuthContext.Provider value={{ user, login, logout, loading, isAuthenticated: Boolean(user) }}>

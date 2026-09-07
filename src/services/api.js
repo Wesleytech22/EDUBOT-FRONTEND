@@ -20,6 +20,7 @@ api.interceptors.response.use(
       localStorage.removeItem('edubot_token');
       localStorage.removeItem('edubot_user');
       if (window.location.pathname !== '/login') {
+        localStorage.setItem('edubot_logout_reason', 'expired');
         window.location.href = '/login';
       }
     }
