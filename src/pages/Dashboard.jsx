@@ -1,37 +1,74 @@
+import { useEffect, useState } from 'react';
 import Layout from '../components/Layout.jsx';
+import api from '../services/api.js';
 import '../styles/dashboard.css';
 
-// MOCK DATA ONLY — SPRINT 02 (ver retro, slide 8 e documentos/E-Kanban-Sprint02.md).
-// A leitura real via API (Google Sheets / métricas de envio) fica para as
-// Sprints 05 e 06. Aqui o objetivo técnico é apenas a rota protegida e a
-// renderização do componente principal do React.
-const KPIS = [
-  { value: '1.2k', label: 'Notificações enviadas', ref: 'RF-12' },
-  { value: '98%', label: 'Contatos alcançados', ref: 'RF-12' },
-  { value: '200+', label: 'Contatos com opt-in', ref: 'RF-10' },
-  { value: '150', label: 'Interações no FAQ', ref: 'RF-13' },
-];
+function formatDateTime(value) {
+  if (!value) return '—';
+  return new Date(value).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+}
 
-const ENGAGEMENT = [
-  { title: 'Bolsa Integral ETEC 2027', pct: 92 },
-  { title: 'Curso Técnico em Informática', pct: 84 },
-  { title: 'Edital PROUNI 2027', pct: 71 },
-  { title: 'Curso de Inglês Gratuito', pct: 63 },
-  { title: 'Programa Jovem Aprendiz', pct: 48 },
-  { title: 'Feira de Profissões', pct: 35 },
-];
-
-const DISPATCHES = [
-  { title: 'Bolsa Integral ETEC 2027', sent: 212, delivered: 208, failed: 4, date: '24/09 09:12' },
-  { title: 'Curso Técnico em Informática', sent: 212, delivered: 211, failed: 1, date: '18/09 14:03' },
-  { title: 'Edital PROUNI 2027', sent: 205, delivered: 199, failed: 6, date: '11/09 08:47' },
-];
-
+// Dashboard com dados reais do módulo de Oportunidades (RF-01 a RF-03,
+// já concluído). Métricas de envio por contato, engajamento no FAQ e o
+// Painel Escolar dependem dos módulos B/C (WhatsApp/N8N) e F/H (Google
+// Sheets), ainda não implementados — por isso aparecem como "ainda sem
+// dados", em vez de números fictícios.
 export default function Dashboard() {
+  const [items, setItems] = useState(null);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const { data } = await api.get('/opportunities');
+        setItems(data.items);
+      } catch (err) {
+        setError(err.response?.data?.error || 'Não foi possível carregar o dashboard.');
+      }
+    })();
+  }, []);
+
+  if (error) {
+    return (
+      <Layout title="Dashboard">
+        <p className="field error">{error}</p>
+      </Layout>
+    );
+  }
+
+  if (!items) {
+    return (
+      <Layout title="Dashboard">
+        <p className="opp-hint">Carregando…</p>
+      </Layout>
+    );
+  }
+
+  const dispatched = items.filter((o) => o.dispatchedAt);
+  const kpis = [
+    { value: items.length, label: 'Oportunidades cadastradas', ref: 'RF-01' },
+    { value: items.filter((o) => o.status === 'Ativa').length, label: 'Ativas', ref: 'RF-03' },
+    { value: dispatched.length, label: 'Disparadas', ref: 'RF-05' },
+    { value: items.filter((o) => o.isDraft).length, label: 'Rascunhos', ref: 'RF-01' },
+  ];
+
+  const byAudience = new Map();
+  for (const o of items) {
+    byAudience.set(o.targetAudience, (byAudience.get(o.targetAudience) || 0) + 1);
+  }
+  const audienceBreakdown = [...byAudience.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 6);
+  const maxAudienceCount = Math.max(1, ...audienceBreakdown.map(([, count]) => count));
+
+  const lastDispatches = [...dispatched]
+    .sort((a, b) => new Date(b.dispatchedAt) - new Date(a.dispatchedAt))
+    .slice(0, 5);
+
   return (
     <Layout title="Dashboard">
       <div className="dash-kpis">
-        {KPIS.map((kpi) => (
+        {kpis.map((kpi) => (
           <div className="card dash-kpi" key={kpi.label}>
             <strong>{kpi.value}</strong>
             <span>{kpi.label}</span>
@@ -42,70 +79,61 @@ export default function Dashboard() {
 
       <div className="dash-mid">
         <div className="card">
-          <h3>Oportunidades com maior engajamento</h3>
-          <p className="dash-hint">RF-13 · taxa de resposta por oportunidade</p>
-          <div className="dash-bars">
-            {ENGAGEMENT.map((item) => (
-              <div className="dash-bar-row" key={item.title}>
-                <span className="dash-bar-label">{item.title}</span>
-                <div className="dash-bar-track">
-                  <div className="dash-bar-fill" style={{ width: `${item.pct}%` }} />
+          <h3>Oportunidades por público-alvo</h3>
+          <p className="dash-hint">RF-03 · distribuição das oportunidades cadastradas</p>
+          {audienceBreakdown.length === 0 ? (
+            <p className="opp-hint">Nenhuma oportunidade cadastrada ainda.</p>
+          ) : (
+            <div className="dash-bars">
+              {audienceBreakdown.map(([audience, count]) => (
+                <div className="dash-bar-row" key={audience}>
+                  <span className="dash-bar-label">{audience}</span>
+                  <div className="dash-bar-track">
+                    <div className="dash-bar-fill" style={{ width: `${(count / maxAudienceCount) * 100}%` }} />
+                  </div>
+                  <span className="dash-bar-pct">{count}</span>
                 </div>
-                <span className="dash-bar-pct">{item.pct}%</span>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
+          <p className="dash-hint">Engajamento por interação no FAQ chega com o módulo de chatbot (Sprint 04).</p>
         </div>
 
         <div className="card">
           <h3>Painel escolar</h3>
           <p className="dash-hint">RF-18 e RF-19 · dados lidos do Google Sheets</p>
-          <div className="dash-school-kpis">
-            <div>
-              <strong>92%</strong>
-              <span>Frequência média</span>
-            </div>
-            <div>
-              <strong>88%</strong>
-              <span>Desempenho geral</span>
-            </div>
-          </div>
-          <div className="dash-sync-banner">
-            <span className="dot" style={{ background: 'var(--g600)' }} />
-            Sincronizado às 07:40 de hoje · RF-17
-          </div>
-          <p className="dash-school-count">318 alunos na base sincronizada</p>
-          <p className="dash-hint">Somente leitura — a planilha da escola permanece a única fonte de escrita.</p>
+          <p className="opp-hint">Ainda sem dados — a integração com o Google Sheets chega na Sprint 05/06.</p>
         </div>
       </div>
 
       <div className="card">
         <h3>Últimos disparos</h3>
-        <p className="dash-hint">RF-06 · log de envio com status de entrega</p>
-        <div className="table-scroll">
-          <table className="dash-table">
-            <thead>
-              <tr>
-                <th>Oportunidade</th>
-                <th>Enviados</th>
-                <th>Entregues</th>
-                <th>Falhas</th>
-                <th>Data</th>
-              </tr>
-            </thead>
-            <tbody>
-              {DISPATCHES.map((row) => (
-                <tr key={row.title}>
-                  <td>{row.title}</td>
-                  <td>{row.sent}</td>
-                  <td>{row.delivered}</td>
-                  <td>{row.failed}</td>
-                  <td>{row.date}</td>
+        <p className="dash-hint">RF-05 · oportunidades disparadas, mais recentes primeiro</p>
+        {lastDispatches.length === 0 ? (
+          <p className="opp-hint">Nenhuma oportunidade disparada ainda.</p>
+        ) : (
+          <div className="table-scroll">
+            <table className="dash-table">
+              <thead>
+                <tr>
+                  <th>Oportunidade</th>
+                  <th>Público-alvo</th>
+                  <th>Data do disparo</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {lastDispatches.map((row) => (
+                  <tr key={row.id}>
+                    <td>{row.title}</td>
+                    <td>{row.targetAudience}</td>
+                    <td>{formatDateTime(row.dispatchedAt)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        <p className="dash-hint">Status de entrega por contato chega com o módulo de WhatsApp (Sprint 03).</p>
       </div>
     </Layout>
   );
