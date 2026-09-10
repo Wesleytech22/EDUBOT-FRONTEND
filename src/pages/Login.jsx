@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import '../styles/login.css';
@@ -8,6 +8,8 @@ const LOGOUT_REASON_MESSAGES = {
   expired: 'Sua sessão expirou. Faça login novamente.',
 };
 
+const RESET_SUCCESS_TIMEOUT_MS = 6000;
+
 export default function Login() {
   const { login, loading } = useAuth();
   const navigate = useNavigate();
@@ -15,16 +17,27 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const resetSuccess = Boolean(location.state?.resetSuccess);
+  const [resetSuccess, setResetSuccess] = useState(Boolean(location.state?.resetSuccess));
   const [logoutMessage] = useState(() => {
     const reason = localStorage.getItem('edubot_logout_reason');
     localStorage.removeItem('edubot_logout_reason');
     return LOGOUT_REASON_MESSAGES[reason] || '';
   });
 
+  // Some só temporariamente e não deve reaparecer se o usuário voltar/atualizar
+  // a página (o estado de navegação, do contrário, ficaria preso aqui).
+  useEffect(() => {
+    if (!resetSuccess) return;
+    navigate(location.pathname, { replace: true, state: {} });
+    const timer = setTimeout(() => setResetSuccess(false), RESET_SUCCESS_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
+    setResetSuccess(false);
     try {
       await login(email, password);
       navigate('/', { replace: true });
