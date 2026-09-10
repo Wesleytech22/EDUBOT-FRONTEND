@@ -5,6 +5,7 @@ import RedefinirSenha from './pages/RedefinirSenha.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Oportunidades from './pages/Oportunidades.jsx';
 import NovaOportunidade from './pages/NovaOportunidade.jsx';
+import SobreNos from './pages/SobreNos.jsx';
 import PrivateRoute from './components/PrivateRoute.jsx';
 
 export default function App() {
@@ -46,6 +47,15 @@ export default function App() {
         element={
           <PrivateRoute roles={['administrador']}>
             <NovaOportunidade />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/sobre"
+        element={
+          <PrivateRoute>
+            <SobreNos />
           </PrivateRoute>
         }
       />
