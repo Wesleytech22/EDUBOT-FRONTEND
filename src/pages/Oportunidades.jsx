@@ -57,7 +57,7 @@ export default function Oportunidades() {
     setActionError('');
     try {
       await api.patch(`/opportunities/${id}/dispatch`);
-      load();
+      navigate(`/oportunidades/${id}/disparo`);
     } catch (err) {
       setActionError(err.response?.data?.error || 'Não foi possível disparar esta oportunidade.');
     }
@@ -136,7 +136,6 @@ export default function Oportunidades() {
               <tbody>
                 {items.map((o) => {
                   const style = STATUS_STYLE[o.status];
-                  const isEncerrada = o.status === 'Encerrada';
                   const isRascunho = o.status === 'Rascunho';
                   return (
                     <tr key={o.id}>
@@ -153,8 +152,8 @@ export default function Oportunidades() {
                         {isAdmin ? (
                           <>
                             <Link to={`/oportunidades/${o.id}/editar`}>Editar</Link>
-                            {isEncerrada ? (
-                              <span className="opp-action-disabled">Ver histórico</span>
+                            {o.dispatchedAt ? (
+                              <Link to={`/oportunidades/${o.id}/disparo`}>Ver disparo</Link>
                             ) : (
                               <button
                                 type="button"
