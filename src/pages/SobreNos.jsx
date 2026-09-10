@@ -61,7 +61,7 @@ export default function SobreNos() {
   return (
     <Layout title="Sobre Nós">
       <div className="card sobre-intro">
-        <h3>Quem construiu o EduBot</h3>
+        <h3>Conheça a equipe de desenvolvimento do software</h3>
         <p className="sobre-hint">
           Equipe da disciplina de Análise e Desenvolvimento de Sistemas por trás da plataforma.
         </p>
