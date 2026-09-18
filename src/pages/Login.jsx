@@ -10,6 +10,28 @@ const LOGOUT_REASON_MESSAGES = {
 
 const RESET_SUCCESS_TIMEOUT_MS = 6000;
 
+const RELEASE_NOTES = {
+  sprint: 'Sprint 03',
+  updatedAt: '10/09/2026',
+  shipped: [
+    {
+      title: 'Nova tela "Sobre Nós"',
+      description:
+        'Conheça a equipe de desenvolvimento do EduBot — foto, cargo e bio de cada integrante, disponível no menu lateral.',
+    },
+  ],
+  inProgress: [
+    {
+      title: 'Broadcast via WhatsApp',
+      description: 'RF-04 a RF-06 · objetivo central desta sprint, ainda em desenvolvimento.',
+    },
+  ],
+  upcoming: [
+    { sprint: 'Sprint 04', title: 'Estrela da Cruzeiro na identidade visual do produto' },
+    { sprint: 'Sprint 05', title: 'Segurança da informação (backup dos dados escolares)' },
+  ],
+};
+
 export default function Login() {
   const { login, loading } = useAuth();
   const navigate = useNavigate();
@@ -18,6 +40,7 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [resetSuccess, setResetSuccess] = useState(Boolean(location.state?.resetSuccess));
+  const [showReleaseNotes, setShowReleaseNotes] = useState(false);
   const [logoutMessage] = useState(() => {
     const reason = localStorage.getItem('edubot_logout_reason');
     localStorage.removeItem('edubot_logout_reason');
@@ -52,6 +75,57 @@ export default function Login() {
         <h1>EduBot</h1>
         <p>Plataforma web de gestão de oportunidades educacionais e acompanhamento escolar.</p>
         <span className="login-hero-badge">Acesso restrito à equipe da escola</span>
+
+        <div className="login-release-notes">
+          <button
+            type="button"
+            className="login-release-notes-toggle"
+            onClick={() => setShowReleaseNotes((v) => !v)}
+            aria-expanded={showReleaseNotes}
+          >
+            {showReleaseNotes ? 'Ocultar' : 'Ver'} novidades da {RELEASE_NOTES.sprint}
+          </button>
+
+          {showReleaseNotes && (
+            <div className="login-release-notes-panel">
+              <div className="login-release-notes-header">
+                <strong>Novidades · {RELEASE_NOTES.sprint}</strong>
+                <span>Atualizado em {RELEASE_NOTES.updatedAt}</span>
+              </div>
+
+              <ul className="login-release-notes-list">
+                {RELEASE_NOTES.shipped.map((item) => (
+                  <li key={item.title}>
+                    <span className="badge login-release-badge login-release-badge-new">Novo</span>
+                    <div>
+                      <p className="login-release-item-title">{item.title}</p>
+                      <p className="login-release-item-desc">{item.description}</p>
+                    </div>
+                  </li>
+                ))}
+                {RELEASE_NOTES.inProgress.map((item) => (
+                  <li key={item.title}>
+                    <span className="badge login-release-badge login-release-badge-progress">Em andamento</span>
+                    <div>
+                      <p className="login-release-item-title">{item.title}</p>
+                      <p className="login-release-item-desc">{item.description}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+
+              <p className="login-release-notes-next-label">Próximas sprints</p>
+              <ul className="login-release-notes-next-list">
+                {RELEASE_NOTES.upcoming.map((item) => (
+                  <li key={item.title}>
+                    <span className="badge login-release-badge login-release-badge-next">{item.sprint}</span>
+                    {item.title}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
       </section>
 
       <section className="login-form-wrap">
