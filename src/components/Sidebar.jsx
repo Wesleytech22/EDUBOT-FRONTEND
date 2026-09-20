@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { to: '/metricas', label: 'Métricas', disabled: true },
   { to: '/painel-escolar', label: 'Painel Escolar', disabled: true },
   { to: '/integracao', label: 'Integração', disabled: true },
+  { to: '/sobre', label: 'Sobre Nós' },
 ];
 
 export default function Sidebar() {
