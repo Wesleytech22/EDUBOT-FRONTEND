@@ -23,12 +23,16 @@ const RELEASE_NOTES = {
   inProgress: [
     {
       title: 'Broadcast via WhatsApp',
-      description: 'RF-04 a RF-06 · objetivo central desta sprint, ainda em desenvolvimento.',
+      description: 'Objetivo central desta sprint, ainda em desenvolvimento.',
     },
   ],
   upcoming: [
     { sprint: 'Sprint 04', title: 'Estrela da Cruzeiro na identidade visual do produto' },
     { sprint: 'Sprint 05', title: 'Segurança da informação (backup dos dados escolares)' },
+  ],
+  testAccess: [
+    { role: 'Administrador', email: 'wealeyr537@gmail.com', password: 'LumenforgeDPTI' },
+    { role: 'Equipe da Escola', email: 'wealeyr6@gmail.com', password: 'LumenforgeDPTI' },
   ],
 };
 
@@ -124,6 +128,16 @@ export default function Login() {
                   </li>
                 ))}
               </ul>
+
+              <p className="login-release-notes-next-label">Acessos para teste do portal</p>
+              <ul className="login-release-notes-test-access">
+                {RELEASE_NOTES.testAccess.map((item) => (
+                  <li key={item.role}>
+                    <strong>{item.role}</strong>
+                    <span>{item.email} · {item.password}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
         </div>
@@ -195,11 +209,6 @@ export default function Login() {
           <button type="submit" className="btn btn-primary login-submit" disabled={loading}>
             {loading ? 'Entrando…' : 'Entrar'}
           </button>
-
-          <div className="login-rf-notes">
-            <p>RF-20 · Autenticação com perfis Administrador e Equipe da Escola</p>
-            <p>RF-21 · Sessões inativas encerradas e acessos registrados em log</p>
-          </div>
         </form>
       </section>
     </div>

@@ -46,10 +46,10 @@ export default function Dashboard() {
 
   const dispatched = items.filter((o) => o.dispatchedAt);
   const kpis = [
-    { value: items.length, label: 'Oportunidades cadastradas', ref: 'RF-01' },
-    { value: items.filter((o) => o.status === 'Ativa').length, label: 'Ativas', ref: 'RF-03' },
-    { value: dispatched.length, label: 'Disparadas', ref: 'RF-05' },
-    { value: items.filter((o) => o.isDraft).length, label: 'Rascunhos', ref: 'RF-01' },
+    { value: items.length, label: 'Oportunidades cadastradas' },
+    { value: items.filter((o) => o.status === 'Ativa').length, label: 'Ativas' },
+    { value: dispatched.length, label: 'Disparadas' },
+    { value: items.filter((o) => o.isDraft).length, label: 'Rascunhos' },
   ];
 
   const byAudience = new Map();
@@ -72,7 +72,6 @@ export default function Dashboard() {
           <div className="card dash-kpi" key={kpi.label}>
             <strong>{kpi.value}</strong>
             <span>{kpi.label}</span>
-            <small>{kpi.ref}</small>
           </div>
         ))}
       </div>
@@ -80,7 +79,7 @@ export default function Dashboard() {
       <div className="dash-mid">
         <div className="card">
           <h3>Oportunidades por público-alvo</h3>
-          <p className="dash-hint">RF-03 · distribuição das oportunidades cadastradas</p>
+          <p className="dash-hint">Distribuição das oportunidades cadastradas</p>
           {audienceBreakdown.length === 0 ? (
             <p className="opp-hint">Nenhuma oportunidade cadastrada ainda.</p>
           ) : (
@@ -101,14 +100,14 @@ export default function Dashboard() {
 
         <div className="card">
           <h3>Painel escolar</h3>
-          <p className="dash-hint">RF-18 e RF-19 · dados lidos do Google Sheets</p>
+          <p className="dash-hint">Dados lidos do Google Sheets</p>
           <p className="opp-hint">Ainda sem dados — a integração com o Google Sheets chega na Sprint 05/06.</p>
         </div>
       </div>
 
       <div className="card">
         <h3>Últimos disparos</h3>
-        <p className="dash-hint">RF-05 · oportunidades disparadas, mais recentes primeiro</p>
+        <p className="dash-hint">Oportunidades disparadas, mais recentes primeiro</p>
         {lastDispatches.length === 0 ? (
           <p className="opp-hint">Nenhuma oportunidade disparada ainda.</p>
         ) : (

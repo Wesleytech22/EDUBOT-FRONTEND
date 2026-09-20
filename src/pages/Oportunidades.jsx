@@ -110,7 +110,7 @@ export default function Oportunidades() {
 
       <div className="card">
         <h3>Oportunidades cadastradas</h3>
-        <p className="opp-hint">RF-03 · busca por título e filtros por situação e público-alvo</p>
+        <p className="opp-hint">Busca por título e filtros por situação e público-alvo</p>
 
         {actionError && <p className="field error">{actionError}</p>}
         {error && <p className="field error">{error}</p>}

@@ -130,7 +130,7 @@ export default function NovaOportunidade() {
           onSubmit={(e) => e.preventDefault()}
         >
           <h3>Dados da oportunidade</h3>
-          <p className="opp-hint">RF-02 · título, descrição, público-alvo, prazo e link ou anexo</p>
+          <p className="opp-hint">Título, descrição, público-alvo, prazo e link ou anexo</p>
 
           <div className="field">
             <label htmlFor="title">Título da oportunidade *</label>
@@ -199,7 +199,7 @@ export default function NovaOportunidade() {
           {serverError && <p className="field error">{serverError}</p>}
 
           <div className="nova-opp-actions">
-            <span className="hint">RF-30 · campos obrigatórios validados antes do envio</span>
+            <span className="hint">Campos obrigatórios validados antes do envio</span>
             <div className="nova-opp-buttons">
               <button type="button" className="btn btn-ghost" onClick={() => navigate('/oportunidades')}>
                 Cancelar
@@ -223,7 +223,7 @@ export default function NovaOportunidade() {
         <div className="nova-opp-side">
           <div className="card">
             <h3>Pré-visualização da mensagem</h3>
-            <p className="opp-hint">RF-05 · texto que será enviado pelo fluxo do N8N via WAHA (na Sprint 03)</p>
+            <p className="opp-hint">Texto que será enviado pelo fluxo do N8N via WAHA (na Sprint 03)</p>
             <div className="wa-chat">
               <div className="wa-bubble">
                 <strong>EduBot · E. E. Jardim União</strong>
@@ -235,11 +235,11 @@ export default function NovaOportunidade() {
 
           <div className="card">
             <h3>Confirmação de disparo</h3>
-            <p className="opp-hint">RF-31 · o envio exige confirmação explícita</p>
+            <p className="opp-hint">O envio exige confirmação explícita</p>
             <ul className="nova-opp-confirm-list">
               <li><span className="dot" style={{ background: 'var(--g600)' }} /> Contatos com opt-in ativo receberão a mensagem</li>
               <li><span className="dot" style={{ background: 'var(--t400)' }} /> Envio imediato após a confirmação</li>
-              <li><span className="dot" style={{ background: 'var(--t400)' }} /> O log de entrega é registrado por contato · RF-07</li>
+              <li><span className="dot" style={{ background: 'var(--t400)' }} /> O log de entrega é registrado por contato</li>
             </ul>
             <label className="nova-opp-checkbox">
               <input type="checkbox" checked={confirmChecked} onChange={(e) => setConfirmChecked(e.target.checked)} />
