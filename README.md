@@ -15,7 +15,7 @@ npm run dev            # http://localhost:5173
 Requer o backend (`../backend`) rodando em `http://localhost:4000` (ou o
 endereço configurado em `VITE_API_URL`).
 
-- todo merge precisa ser enviado para a branch pr/implementacao-team antes de ser realizado o merge para master.
+- todo merge precisa ser enviado para a branch pr/implementacao-team antes de ser realizado o merge para master.git 
 
 ## Telas
 
