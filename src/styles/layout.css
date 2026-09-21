@@ -8,6 +8,7 @@
 
 .sidebar {
   position: relative;
+  z-index: 0;
   overflow: hidden;
   width: 240px;
   flex-shrink: 0;
