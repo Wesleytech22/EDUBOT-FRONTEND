@@ -7,6 +7,8 @@
 }
 
 .sidebar {
+  position: relative;
+  overflow: hidden;
   width: 240px;
   flex-shrink: 0;
   background: var(--navy);
@@ -16,7 +18,23 @@
   gap: 28px;
 }
 
+/* RF a definir (Sprint 04) — marca Lumen Forge grande no fundo da sidebar;
+   z-index negativo garante que o texto/nav fiquem sempre por cima. */
+.sidebar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: url('/lumen-forge-mark.png');
+  background-repeat: no-repeat;
+  background-position: center 115%;
+  background-size: 340px;
+  opacity: 0.16;
+  pointer-events: none;
+}
+
 .sidebar-brand {
+  position: relative;
   color: #fff;
   font-size: 22px;
   font-weight: 700;
@@ -133,6 +151,11 @@
     padding: 14px 16px;
     gap: 16px;
     overflow-x: auto;
+  }
+
+  .sidebar::before {
+    background-position: right center;
+    background-size: 140px;
   }
 
   .sidebar-nav {
