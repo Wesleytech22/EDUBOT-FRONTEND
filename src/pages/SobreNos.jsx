@@ -109,6 +109,18 @@ export default function SobreNos() {
           ))}
         </div>
       )}
+
+      <div className="card sobre-credito">
+        <img
+          className="sobre-credito-logo"
+          src="/cruzeiro-do-sul-logo.png"
+          alt="Universidade Cruzeiro do Sul"
+        />
+        <p className="sobre-credito-texto">
+          Projeto desenvolvido para o curso de Análise e Desenvolvimento de Sistemas da
+          Universidade Cruzeiro do Sul.
+        </p>
+      </div>
     </Layout>
   );
 }

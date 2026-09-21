@@ -83,3 +83,32 @@
   color: var(--t600);
   line-height: 1.5;
 }
+
+.sobre-credito {
+  margin-top: 16px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.sobre-credito-logo {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.sobre-credito-texto {
+  margin: 0;
+  font-size: 13px;
+  color: var(--t600);
+  line-height: 1.5;
+}
+
+@media (max-width: 480px) {
+  .sobre-credito {
+    flex-direction: column;
+    text-align: center;
+  }
+}
