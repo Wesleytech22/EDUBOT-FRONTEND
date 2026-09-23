@@ -22,9 +22,15 @@ export default function Dashboard() {
   useEffect(() => {
     (async () => {
       try {
-        const [{ data }, { data: logsData }] = await Promise.all([
+        // O status de entrega é complementar: se /metrics/dispatch-logs
+        // falhar (ex.: backend ainda sem a Sprint 03), o Dashboard continua
+        // funcionando só com as oportunidades, como antes.
+        const [{ data }, logsData] = await Promise.all([
           api.get('/opportunities'),
-          api.get('/metrics/dispatch-logs'),
+          api
+            .get('/metrics/dispatch-logs')
+            .then((r) => r.data)
+            .catch(() => ({ items: [] })),
         ]);
         const delivery = new Map();
         for (const log of logsData.items) {
