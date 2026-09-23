@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import Layout from '../components/Layout.jsx';
 import api from '../services/api.js';
@@ -10,8 +10,16 @@ const EMPTY_FORM = {
   targetAudience: '',
   deadline: '',
   link: '',
-  attachmentName: '',
 };
+
+// Anexo da oportunidade: mesmo limite validado no backend.
+const ATTACHMENT_TYPES = ['application/pdf', 'image/png', 'image/jpeg'];
+const ATTACHMENT_MAX_BYTES = 5 * 1024 * 1024;
+
+function formatFileSize(bytes) {
+  if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1).replace('.', ',')} MB`;
+}
 
 function formatDeadlinePreview(deadline) {
   if (!deadline) return '__/__/____';
@@ -34,6 +42,12 @@ export default function NovaOportunidade() {
   // Oportunidade já publicada (não é rascunho): editar não pode rebaixá-la
   // para rascunho — o salvamento mantém o status atual.
   const [isPublished, setIsPublished] = useState(false);
+  // Anexo já salvo no servidor, arquivo novo escolhido e remoção pendente —
+  // o arquivo só é enviado ao salvar a oportunidade.
+  const [savedAttachment, setSavedAttachment] = useState(null);
+  const [attachmentFile, setAttachmentFile] = useState(null);
+  const [removeAttachment, setRemoveAttachment] = useState(false);
+  const attachmentInputRef = useRef(null);
 
   useEffect(() => {
     if (!isEditing) return;
@@ -46,8 +60,8 @@ export default function NovaOportunidade() {
           targetAudience: data.targetAudience,
           deadline: data.deadline?.slice(0, 10) || '',
           link: data.link || '',
-          attachmentName: data.attachmentName || '',
         });
+        setSavedAttachment(data.hasAttachment ? { name: data.attachmentName } : null);
         setAlreadyDispatched(Boolean(data.dispatchedAt));
         setIsPublished(!data.isDraft);
       } catch (err) {
@@ -58,6 +72,65 @@ export default function NovaOportunidade() {
 
   function handleChange(field) {
     return (e) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
+  }
+
+  function handleAttachmentChange(e) {
+    const file = e.target.files?.[0] || null;
+    if (!file) return;
+    if (!ATTACHMENT_TYPES.includes(file.type)) {
+      setErrors((prev) => ({ ...prev, attachment: 'Envie um arquivo PDF, PNG ou JPG.' }));
+      e.target.value = '';
+      return;
+    }
+    if (file.size > ATTACHMENT_MAX_BYTES) {
+      setErrors((prev) => ({ ...prev, attachment: 'O anexo deve ter no máximo 5 MB.' }));
+      e.target.value = '';
+      return;
+    }
+    setErrors((prev) => ({ ...prev, attachment: undefined }));
+    setAttachmentFile(file);
+    setRemoveAttachment(false);
+  }
+
+  function clearAttachment() {
+    if (attachmentFile) {
+      setAttachmentFile(null);
+    } else {
+      setRemoveAttachment(true);
+    }
+    if (attachmentInputRef.current) attachmentInputRef.current.value = '';
+  }
+
+  // O download exige o token, por isso o arquivo é buscado pela API e aberto
+  // em uma nova aba a partir de um blob.
+  async function openSavedAttachment() {
+    try {
+      const { data } = await api.get(`/opportunities/${id}/attachment`, { responseType: 'blob' });
+      const url = URL.createObjectURL(data);
+      window.open(url, '_blank', 'noopener');
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    } catch {
+      setServerError('Não foi possível abrir o anexo.');
+    }
+  }
+
+  async function syncAttachment(opportunityId) {
+    if (attachmentFile) {
+      const formData = new FormData();
+      formData.append('file', attachmentFile);
+      await api.put(`/opportunities/${opportunityId}/attachment`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+    } else if (removeAttachment && savedAttachment) {
+      await api.delete(`/opportunities/${opportunityId}/attachment`);
+    }
+    // A tela pode continuar montada depois de salvar (nova → editar): o que
+    // foi enviado passa a ser o anexo salvo.
+    if (attachmentFile) setSavedAttachment({ name: attachmentFile.name });
+    else if (removeAttachment) setSavedAttachment(null);
+    setAttachmentFile(null);
+    setRemoveAttachment(false);
+    if (attachmentInputRef.current) attachmentInputRef.current.value = '';
   }
 
   // Validação obrigatória no front (RF-30) — replicada no back (Express) para segurança do payload.
@@ -72,12 +145,14 @@ export default function NovaOportunidade() {
   }
 
   async function persist(payload) {
+    let saved;
     if (isEditing) {
-      const { data } = await api.put(`/opportunities/${id}`, payload);
-      return data;
+      ({ data: saved } = await api.put(`/opportunities/${id}`, payload));
+    } else {
+      ({ data: saved } = await api.post('/opportunities', payload));
     }
-    const { data } = await api.post('/opportunities', payload);
-    return data;
+    await syncAttachment(saved.id);
+    return saved;
   }
 
   async function handleSaveDraft() {
@@ -202,15 +277,41 @@ export default function NovaOportunidade() {
           </div>
 
           <div className="field">
-            <label htmlFor="attachmentName">Anexo (opcional)</label>
+            <label htmlFor="attachment">Anexo (opcional)</label>
+            {attachmentFile ? (
+              <div className="nova-opp-attachment">
+                <span className="nova-opp-attachment-name">{attachmentFile.name}</span>
+                <span className="hint">{formatFileSize(attachmentFile.size)} · enviado ao salvar</span>
+                <button type="button" className="btn btn-ghost" onClick={clearAttachment} disabled={saving}>
+                  Remover
+                </button>
+              </div>
+            ) : savedAttachment && !removeAttachment ? (
+              <div className="nova-opp-attachment">
+                <span className="nova-opp-attachment-name">{savedAttachment.name}</span>
+                <button type="button" className="btn btn-ghost" onClick={openSavedAttachment}>
+                  Abrir
+                </button>
+                <button type="button" className="btn btn-ghost" onClick={clearAttachment} disabled={saving}>
+                  Remover
+                </button>
+              </div>
+            ) : null}
             <input
-              id="attachmentName"
-              className="input"
-              value={form.attachmentName}
-              onChange={handleChange('attachmentName')}
-              placeholder="nome-do-arquivo.pdf"
+              id="attachment"
+              ref={attachmentInputRef}
+              type="file"
+              className="input nova-opp-file"
+              accept="application/pdf,image/png,image/jpeg,.pdf,.png,.jpg,.jpeg"
+              onChange={handleAttachmentChange}
+              disabled={saving}
             />
-            <span className="hint">PDF, PNG ou JPG · até 5 MB (upload real fica fora do escopo da Sprint 02)</span>
+            <span className="hint">
+              {removeAttachment && !attachmentFile
+                ? 'O anexo atual será removido ao salvar.'
+                : 'PDF, PNG ou JPG · até 5 MB'}
+            </span>
+            {errors.attachment && <span className="error">{errors.attachment}</span>}
           </div>
 
           <div className="nova-opp-divider" />
