@@ -31,6 +31,9 @@ export default function NovaOportunidade() {
   const [serverError, setServerError] = useState('');
   const [saving, setSaving] = useState(false);
   const [alreadyDispatched, setAlreadyDispatched] = useState(false);
+  // Oportunidade já publicada (não é rascunho): editar não pode rebaixá-la
+  // para rascunho — o salvamento mantém o status atual.
+  const [isPublished, setIsPublished] = useState(false);
 
   useEffect(() => {
     if (!isEditing) return;
@@ -46,6 +49,7 @@ export default function NovaOportunidade() {
           attachmentName: data.attachmentName || '',
         });
         setAlreadyDispatched(Boolean(data.dispatchedAt));
+        setIsPublished(!data.isDraft);
       } catch (err) {
         setServerError(err.response?.data?.error || 'Não foi possível carregar a oportunidade.');
       }
@@ -85,6 +89,21 @@ export default function NovaOportunidade() {
       navigate(`/oportunidades/${saved.id}/editar`);
     } catch (err) {
       setServerError(err.response?.data?.error || 'Não foi possível salvar o rascunho.');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  // Edição de oportunidade já publicada: salva sem mudar para rascunho.
+  async function handleSaveChanges() {
+    if (!validate()) return;
+    setSaving(true);
+    setServerError('');
+    try {
+      await persist({ ...form, isDraft: false });
+      navigate('/oportunidades');
+    } catch (err) {
+      setServerError(err.response?.data?.error || 'Não foi possível salvar as alterações.');
     } finally {
       setSaving(false);
     }
@@ -204,18 +223,25 @@ export default function NovaOportunidade() {
               <button type="button" className="btn btn-ghost" onClick={() => navigate('/oportunidades')}>
                 Cancelar
               </button>
-              <button type="button" className="btn btn-secondary" onClick={handleSaveDraft} disabled={saving}>
-                Salvar rascunho
-              </button>
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={handleSaveAndDispatch}
-                disabled={saving || alreadyDispatched}
-                title={alreadyDispatched ? 'Esta oportunidade já foi disparada' : ''}
-              >
-                Salvar e disparar
-              </button>
+              {isPublished ? (
+                <button type="button" className="btn btn-primary" onClick={handleSaveChanges} disabled={saving}>
+                  Salvar alterações
+                </button>
+              ) : (
+                <button type="button" className="btn btn-secondary" onClick={handleSaveDraft} disabled={saving}>
+                  Salvar rascunho
+                </button>
+              )}
+              {!alreadyDispatched && (
+                <button
+                  type="button"
+                  className={isPublished ? 'btn btn-secondary' : 'btn btn-primary'}
+                  onClick={handleSaveAndDispatch}
+                  disabled={saving}
+                >
+                  Salvar e disparar
+                </button>
+              )}
             </div>
           </div>
         </form>

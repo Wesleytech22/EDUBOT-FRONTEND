@@ -137,6 +137,7 @@ export default function Oportunidades() {
                 {items.map((o) => {
                   const style = STATUS_STYLE[o.status];
                   const isRascunho = o.status === 'Rascunho';
+                  const isEncerrada = o.status === 'Encerrada';
                   return (
                     <tr key={o.id}>
                       <td>{o.title}</td>
@@ -154,6 +155,8 @@ export default function Oportunidades() {
                             <Link to={`/oportunidades/${o.id}/editar`}>Editar</Link>
                             {o.dispatchedAt ? (
                               <Link to={`/oportunidades/${o.id}/disparo`}>Ver disparo</Link>
+                            ) : isEncerrada ? (
+                              <span className="opp-action-disabled">Ver histórico</span>
                             ) : (
                               <button
                                 type="button"
