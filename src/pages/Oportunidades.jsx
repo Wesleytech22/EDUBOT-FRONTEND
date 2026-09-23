@@ -6,6 +6,9 @@ import api from '../services/api.js';
 import '../styles/oportunidades.css';
 
 const STATUS_OPTIONS = ['Todas', 'Ativa', 'Rascunho', 'Encerrada'];
+// Valor da opção "todos os públicos": vazio, para não se confundir com
+// oportunidades cujo público-alvo é literalmente "Todos".
+const ALL_AUDIENCES = '';
 const STATUS_STYLE = {
   Ativa: { bg: 'var(--g100)', fg: 'var(--g600)' },
   Encerrada: { bg: 'var(--alt)', fg: 'var(--t600)' },
@@ -21,10 +24,10 @@ export default function Oportunidades() {
   const { user } = useAuth();
   const isAdmin = user?.role === 'administrador';
   const [items, setItems] = useState([]);
-  const [audiences, setAudiences] = useState(['Todos']);
+  const [audiences, setAudiences] = useState([]);
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('Todas');
-  const [targetAudience, setTargetAudience] = useState('Todos');
+  const [targetAudience, setTargetAudience] = useState(ALL_AUDIENCES);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [actionError, setActionError] = useState('');
@@ -36,11 +39,13 @@ export default function Oportunidades() {
       const params = {};
       if (search) params.search = search;
       if (status !== 'Todas') params.status = status;
-      if (targetAudience !== 'Todos') params.targetAudience = targetAudience;
+      if (targetAudience !== ALL_AUDIENCES) params.targetAudience = targetAudience;
 
       const { data } = await api.get('/opportunities', { params });
       setItems(data.items);
-      setAudiences(['Todos', ...new Set(data.items.map((o) => o.targetAudience))]);
+      // Acumula os públicos já vistos: filtrar por um público não pode
+      // esconder as outras opções da lista.
+      setAudiences((prev) => [...new Set([...prev, ...data.items.map((o) => o.targetAudience)])]);
     } catch (err) {
       setError(err.response?.data?.error || 'Não foi possível carregar as oportunidades.');
     } finally {
@@ -66,7 +71,7 @@ export default function Oportunidades() {
   function clearFilters() {
     setSearch('');
     setStatus('Todas');
-    setTargetAudience('Todos');
+    setTargetAudience(ALL_AUDIENCES);
   }
 
   return (
@@ -97,6 +102,7 @@ export default function Oportunidades() {
           ))}
         </select>
         <select className="input" value={targetAudience} onChange={(e) => setTargetAudience(e.target.value)}>
+          <option value={ALL_AUDIENCES}>Público-alvo: Todos os públicos</option>
           {audiences.map((a) => (
             <option key={a} value={a}>
               Público-alvo: {a}
