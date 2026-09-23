@@ -247,6 +247,73 @@
   background: var(--a600);
 }
 
+.met-chart-bar-reply,
+.met-dot-reply {
+  background: var(--b600);
+}
+
+.met-list-item {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) 32px;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  font-size: 13px;
+  color: var(--t600);
+}
+
+.met-list-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.met-list-track {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--alt);
+  overflow: hidden;
+}
+
+.met-list-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--b600);
+}
+
+.met-list-num {
+  text-align: right;
+  font-weight: 600;
+  color: var(--t900);
+}
+
+.met-eng-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--bd);
+  font-size: 13px;
+  color: var(--t900);
+}
+
+.met-eng-item:last-child {
+  border-bottom: none;
+}
+
+.met-eng-item small {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--t400);
+}
+
+.met-eng-item strong {
+  font-size: 15px;
+  color: var(--g600);
+}
+
 @media (max-width: 960px) {
   .met-filters {
     flex-direction: column;

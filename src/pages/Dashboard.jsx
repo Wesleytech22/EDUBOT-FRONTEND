@@ -107,7 +107,9 @@ export default function Dashboard() {
               ))}
             </div>
           )}
-          <p className="dash-hint">Engajamento por interação no FAQ chega com o módulo de chatbot (Sprint 04).</p>
+          <p className="dash-hint">
+            Respostas e dúvidas recebidas pelo chatbot estão em <Link to="/metricas">Métricas</Link>.
+          </p>
         </div>
 
         <div className="card">

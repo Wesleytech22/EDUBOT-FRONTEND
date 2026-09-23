@@ -40,11 +40,9 @@ function formatDate(isoDate) {
 }
 
 // Tela 06 — Métricas de Engajamento (RF-37 a RF-39, responde à expectativa
-// EX-09). Escopo Sprint 03: só dados reais de disparo (dispatch_logs),
-// recortáveis por período e por oportunidade. Respostas, dúvidas frequentes
-// e engajamento por oportunidade dependem do chatbot (Módulo C/D), que chega
-// na Sprint 04 — por isso aparecem como "ainda sem dados", como já é o
-// padrão do Dashboard.
+// EX-09). Envios vêm dos dispatch_logs; respostas, dúvidas frequentes e
+// engajamento por oportunidade vêm das mensagens que o chatbot registrou
+// (Sprint 04). Tudo recortável por período e por oportunidade.
 export default function Metricas() {
   const [opportunities, setOpportunities] = useState([]);
   const [opportunityId, setOpportunityId] = useState('');
@@ -159,7 +157,7 @@ export default function Metricas() {
             <StatCard value={data.dispatch.totalNotifications.toLocaleString('pt-BR')} label="Notificações enviadas" tag="RF-37" />
             <StatCard value={data.dispatch.contactsReached.toLocaleString('pt-BR')} label="Contatos alcançados" tag="RF-37" />
             <StatCard value={`${data.dispatch.deliveryRate}%`} label="Taxa de entrega" tag="RF-37" highlight />
-            <StatCard value="—" label="Respostas recebidas" tag="RF-38 · chega com o chatbot (Sprint 04)" />
+            <StatCard value={data.chatbot.responsesReceived.toLocaleString('pt-BR')} label="Respostas recebidas" tag="RF-38" />
           </div>
 
           <div className="met-row2">
@@ -194,13 +192,42 @@ export default function Metricas() {
             <div className="card">
               <h3>Dúvidas mais frequentes</h3>
               <p className="opp-hint">RF-38 · intenções identificadas pelo chatbot no período</p>
-              <p className="met-empty">Ainda sem dados — chega com o Módulo C (chatbot) na Sprint 04.</p>
+              {data.chatbot.topQuestions.length === 0 ? (
+                <p className="met-empty">Nenhuma dúvida recebida pelo chatbot no período.</p>
+              ) : (
+                data.chatbot.topQuestions.map((q) => (
+                  <div className="met-list-item" key={q.question}>
+                    <span className="met-list-name">{q.question}</span>
+                    <div className="met-list-track">
+                      <div
+                        className="met-list-fill"
+                        style={{ width: `${(q.count / data.chatbot.topQuestions[0].count) * 100}%` }}
+                      />
+                    </div>
+                    <span className="met-list-num">{q.count}</span>
+                  </div>
+                ))
+              )}
             </div>
 
             <div className="card">
               <h3>Maior engajamento</h3>
               <p className="opp-hint">RF-38 · taxa de resposta por oportunidade</p>
-              <p className="met-empty">Ainda sem dados — depende das respostas do chatbot (Sprint 04).</p>
+              {data.chatbot.topEngagement.length === 0 ? (
+                <p className="met-empty">Nenhuma oportunidade entregue no período.</p>
+              ) : (
+                data.chatbot.topEngagement.map((e) => (
+                  <div className="met-eng-item" key={e.opportunityId}>
+                    <span>
+                      {e.name}
+                      <small>
+                        {e.responded} de {e.reached} contato(s) responderam
+                      </small>
+                    </span>
+                    <strong>{e.percent}%</strong>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </>

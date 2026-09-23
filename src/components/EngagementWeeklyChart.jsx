@@ -5,19 +5,18 @@ function formatWeekLabel(isoDate) {
   return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
 }
 
-// RF-37/RF-38 — "Envios por semana", com o status de entrega consolidado de
-// cada semana. Respostas recebidas entram aqui quando o chatbot (Sprint 04)
-// passar a registrá-las.
+// RF-37/RF-38 — "Envios e respostas por semana": status de entrega
+// consolidado de cada semana e as respostas recebidas pelo chatbot.
 export default function EngagementWeeklyChart({ weeklySeries }) {
   const maxWeekly = useMemo(() => {
     if (!weeklySeries?.length) return 1;
-    return Math.max(1, ...weeklySeries.map((w) => w.enviado + w.falha + w.pendente));
+    return Math.max(1, ...weeklySeries.map((w) => Math.max(w.enviado, w.falha, w.pendente, w.respostas || 0)));
   }, [weeklySeries]);
 
   return (
     <div className="card">
-      <h3>Envios por semana</h3>
-      <p className="opp-hint">RF-37 e RF-38 · envios agregados — respostas chegam com o chatbot na Sprint 04</p>
+      <h3>Envios e respostas por semana</h3>
+      <p className="opp-hint">RF-37 e RF-38 · envios agregados e respostas recebidas no período</p>
       {weeklySeries.length === 0 ? (
         <p className="opp-hint">Nenhum disparo no período selecionado.</p>
       ) : (
@@ -40,6 +39,11 @@ export default function EngagementWeeklyChart({ weeklySeries }) {
                   style={{ height: `${(w.pendente / maxWeekly) * 100}%` }}
                   title={`${w.pendente} pendentes`}
                 />
+                <div
+                  className="met-chart-bar met-chart-bar-reply"
+                  style={{ height: `${((w.respostas || 0) / maxWeekly) * 100}%` }}
+                  title={`${w.respostas || 0} respostas`}
+                />
               </div>
               <span className="met-chart-label">{formatWeekLabel(w.week)}</span>
             </div>
@@ -50,6 +54,7 @@ export default function EngagementWeeklyChart({ weeklySeries }) {
         <span><i className="met-dot met-dot-ok" /> Entregues</span>
         <span><i className="met-dot met-dot-fail" /> Falhas</span>
         <span><i className="met-dot met-dot-pending" /> Pendentes</span>
+        <span><i className="met-dot met-dot-reply" /> Respostas</span>
       </div>
     </div>
   );

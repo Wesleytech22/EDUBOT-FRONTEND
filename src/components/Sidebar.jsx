@@ -6,6 +6,7 @@ const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', end: true },
   { to: '/oportunidades', label: 'Oportunidades' },
   { to: '/metricas', label: 'Métricas' },
+  { to: '/atendimento', label: 'Atendimento' },
   { to: '/painel-escolar', label: 'Painel Escolar', disabled: true },
   { to: '/integracao', label: 'Integração', disabled: true },
   { to: '/sobre', label: 'Sobre Nós' },

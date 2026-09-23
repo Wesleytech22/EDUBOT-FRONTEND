@@ -8,6 +8,7 @@ import NovaOportunidade from './pages/NovaOportunidade.jsx';
 import ResultadoDisparo from './pages/ResultadoDisparo.jsx';
 import Metricas from './pages/Metricas.jsx';
 import SobreNos from './pages/SobreNos.jsx';
+import Atendimento from './pages/Atendimento.jsx';
 import PrivateRoute from './components/PrivateRoute.jsx';
 
 export default function App() {
@@ -67,6 +68,15 @@ export default function App() {
         element={
           <PrivateRoute>
             <Metricas />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/atendimento"
+        element={
+          <PrivateRoute>
+            <Atendimento />
           </PrivateRoute>
         }
       />
