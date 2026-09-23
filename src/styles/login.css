@@ -62,17 +62,44 @@
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: var(--radius-md);
-  padding: 18px 20px;
+  padding: 0 20px 18px;
+  /* Com várias novidades o painel empurrava o login: altura limitada e
+     rolagem interna, sem rolar a página inteira. */
+  max-height: min(60vh, 460px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.login-release-notes-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.login-release-notes-panel::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+}
+
+.login-release-notes-panel::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .login-release-notes-header {
+  /* Título fica visível enquanto o conteúdo rola. */
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 18px 0 12px;
+  /* Mesmo tom do painel (branco 6% sobre o navy), para não virar uma faixa. */
+  background: linear-gradient(rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), var(--navy);
   display: flex;
   justify-content: space-between;
   align-items: baseline;
   gap: 12px;
   font-size: 13px;
   color: #dfe4f2;
-  margin-bottom: 12px;
+  margin-bottom: 0;
 }
 
 .login-release-notes-header strong {
