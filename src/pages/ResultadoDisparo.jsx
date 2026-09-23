@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Layout from '../components/Layout.jsx';
 import api from '../services/api.js';
@@ -29,25 +29,55 @@ export default function ResultadoDisparo() {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [resending, setResending] = useState(false);
+  const [resendMsg, setResendMsg] = useState('');
+
+  const loadLogs = useCallback(async () => {
+    const { data } = await api.get(`/opportunities/${id}/dispatch-logs`);
+    setLogs(data.items);
+  }, [id]);
 
   useEffect(() => {
     (async () => {
       setLoading(true);
       setError('');
       try {
-        const [{ data: opp }, { data: logsData }] = await Promise.all([
-          api.get(`/opportunities/${id}`),
-          api.get(`/opportunities/${id}/dispatch-logs`),
-        ]);
+        const [{ data: opp }] = await Promise.all([api.get(`/opportunities/${id}`), loadLogs()]);
         setOpportunity(opp);
-        setLogs(logsData.items);
       } catch (err) {
         setError(err.response?.data?.error || 'Não foi possível carregar o resultado do disparo.');
       } finally {
         setLoading(false);
       }
     })();
-  }, [id]);
+  }, [id, loadLogs]);
+
+  // Enquanto houver envios aguardando o callback do N8N, atualiza sozinho.
+  const hasPending = logs.some((l) => l.status === 'pendente');
+  useEffect(() => {
+    if (!hasPending) return undefined;
+    const timer = setInterval(() => loadLogs().catch(() => {}), 3000);
+    return () => clearInterval(timer);
+  }, [hasPending, loadLogs]);
+
+  // RF-32 — reenvia só para quem falhou, sem duplicar as entregas feitas.
+  async function handleResend() {
+    setResending(true);
+    setResendMsg('');
+    try {
+      const { data } = await api.post(`/opportunities/${id}/dispatch/resend-failures`);
+      setResendMsg(
+        data.n8n?.ok
+          ? `Reenvio acionado para ${data.resent} contato(s) com falha.`
+          : `Reenvio acionado, mas o N8N não confirmou: ${data.n8n?.error || 'erro desconhecido'}.`
+      );
+      await loadLogs();
+    } catch (err) {
+      setResendMsg(err.response?.data?.error || 'Não foi possível reenviar.');
+    } finally {
+      setResending(false);
+    }
+  }
 
   const total = logs.length;
   const enviados = logs.filter((l) => l.status === 'enviado').length;
@@ -91,11 +121,19 @@ export default function ResultadoDisparo() {
           </div>
 
           <div className="card">
-            <h3>Detalhe por contato</h3>
+            <div className="rd-detail-head">
+              <h3>Detalhe por contato</h3>
+              {falhas > 0 && (
+                <button type="button" className="btn btn-primary" onClick={handleResend} disabled={resending}>
+                  {resending ? 'Reenviando…' : `Reenviar para ${falhas} com falha`}
+                </button>
+              )}
+            </div>
+            {resendMsg && <p className="opp-hint">{resendMsg}</p>}
             {pendentes > 0 && (
               <p className="opp-hint">
-                {pendentes} contato(s) ainda aguardando confirmação do N8N — atualize a página para ver o
-                andamento.
+                {pendentes} contato(s) ainda aguardando confirmação do N8N — a lista se atualiza
+                automaticamente.
               </p>
             )}
 
