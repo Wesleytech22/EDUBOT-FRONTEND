@@ -11,24 +11,48 @@ const LOGOUT_REASON_MESSAGES = {
 const RESET_SUCCESS_TIMEOUT_MS = 6000;
 
 const RELEASE_NOTES = {
-  sprint: 'Sprint 03',
-  updatedAt: '10/09/2026',
+  sprint: 'Sprint 04',
+  updatedAt: '23/09/2026',
   shipped: [
     {
-      title: 'Nova tela "Sobre Nós"',
+      title: 'Chatbot com opt-in e opt-out',
       description:
-        'Conheça a equipe de desenvolvimento do EduBot — foto, cargo e bio de cada integrante, disponível no menu lateral.',
+        'Alunos e famílias se inscrevem com ENTRAR e cancelam com SAIR. MENU lista as oportunidades ativas, e perguntas pelo nome de uma oportunidade são respondidas automaticamente.',
+    },
+    {
+      title: 'Nova tela "Atendimento"',
+      description:
+        'Dúvidas que o chatbot não resolve (ou em que o contato pede ATENDENTE) chegam numa fila para a equipe responder e marcar como atendidas.',
+    },
+    {
+      title: 'Métricas de engajamento completas',
+      description:
+        'Respostas recebidas, dúvidas mais frequentes e taxa de resposta por oportunidade, com filtros por período e por oportunidade.',
+    },
+    {
+      title: 'Disparo com reenvio para falhas',
+      description:
+        'O resultado do disparo mostra o status de cada contato e permite reenviar só para quem falhou, sem duplicar entregas.',
+    },
+    {
+      title: 'Marca Lumen Forge no login e no menu lateral',
+      description: 'A identidade visual do time passa a aparecer no fundo do login e da sidebar.',
     },
   ],
   inProgress: [
     {
-      title: 'Broadcast via WhatsApp',
-      description: 'Objetivo central desta sprint, ainda em desenvolvimento.',
+      title: 'Canal de mensagens',
+      description:
+        'Telegram validado em testes, enquanto o WhatsApp aguarda a liberação do pareamento do número da escola.',
+    },
+    {
+      title: 'Estrela da Cruzeiro na identidade visual do produto',
+      description: 'Prevista para esta sprint, ainda em desenvolvimento.',
     },
   ],
   upcoming: [
-    { sprint: 'Sprint 04', title: 'Estrela da Cruzeiro na identidade visual do produto' },
     { sprint: 'Sprint 05', title: 'Segurança da informação (backup dos dados escolares)' },
+    { sprint: 'Sprint 06', title: 'Painel Escolar com os dados sincronizados do Google Sheets' },
   ],
   testAccess: [
     { role: 'Administrador', email: 'wealeyr537@gmail.com', password: 'LumenforgeDPTI' },
