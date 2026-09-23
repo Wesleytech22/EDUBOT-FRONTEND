@@ -1,31 +1,69 @@
 import { useEffect, useMemo, useState } from 'react';
 import Layout from '../components/Layout.jsx';
+import StatCard from '../components/StatCard.jsx';
+import EngagementWeeklyChart from '../components/EngagementWeeklyChart.jsx';
+import DeliveryStatusItem from '../components/DeliveryStatusItem.jsx';
 import api from '../services/api.js';
 import '../styles/metricas.css';
 
-function formatWeekLabel(isoDate) {
-  const d = new Date(`${isoDate}T00:00:00`);
-  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+const PERIOD_OPTIONS = [
+  { value: '30d', label: 'Últimos 30 dias' },
+  { value: '7d', label: 'Últimos 7 dias' },
+  { value: 'mes', label: 'Este mês' },
+  { value: 'tudo', label: 'Todo o período' },
+  { value: 'custom', label: 'Personalizado' },
+];
+
+function toIsoDate(d) {
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+// Converte a opção de período em intervalo [from, to] (datas inclusivas).
+function resolvePeriod(period, customFrom, customTo) {
+  const today = new Date();
+  if (period === '7d' || period === '30d') {
+    const start = new Date(today);
+    start.setDate(today.getDate() - (period === '7d' ? 6 : 29));
+    return { from: toIsoDate(start), to: toIsoDate(today) };
+  }
+  if (period === 'mes') {
+    return { from: toIsoDate(new Date(today.getFullYear(), today.getMonth(), 1)), to: toIsoDate(today) };
+  }
+  if (period === 'custom') return { from: customFrom, to: customTo };
+  return { from: '', to: '' };
+}
+
+function formatDate(isoDate) {
+  if (!isoDate) return '';
+  return new Date(`${isoDate}T00:00:00`).toLocaleDateString('pt-BR');
 }
 
 // Tela 06 — Métricas de Engajamento (RF-37 a RF-39, responde à expectativa
 // EX-09). Escopo Sprint 03: só dados reais de disparo (dispatch_logs),
-// recortáveis por período e por oportunidade. Dúvidas frequentes e taxa de
-// resposta dependem do chatbot (Módulo C/D), que chega na Sprint 04 — por
-// isso aparecem como "ainda sem dados", como já é o padrão do Dashboard.
+// recortáveis por período e por oportunidade. Respostas, dúvidas frequentes
+// e engajamento por oportunidade dependem do chatbot (Módulo C/D), que chega
+// na Sprint 04 — por isso aparecem como "ainda sem dados", como já é o
+// padrão do Dashboard.
 export default function Metricas() {
   const [opportunities, setOpportunities] = useState([]);
   const [opportunityId, setOpportunityId] = useState('');
-  const [from, setFrom] = useState('');
-  const [to, setTo] = useState('');
+  const [period, setPeriod] = useState('30d');
+  const [customFrom, setCustomFrom] = useState('');
+  const [customTo, setCustomTo] = useState('');
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const { from, to } = useMemo(
+    () => resolvePeriod(period, customFrom, customTo),
+    [period, customFrom, customTo]
+  );
+
   useEffect(() => {
     api
       .get('/opportunities')
-      .then(({ data }) => setOpportunities(data.items))
+      .then(({ data }) => setOpportunities(data.items.filter((o) => o.dispatchedAt)))
       .catch(() => {});
   }, []);
 
@@ -48,33 +86,68 @@ export default function Metricas() {
     })();
   }, [opportunityId, from, to]);
 
-  const maxWeekly = useMemo(() => {
-    if (!data?.weeklySeries?.length) return 1;
-    return Math.max(1, ...data.weeklySeries.map((w) => w.enviado + w.falha + w.pendente));
-  }, [data]);
+  function clearFilters() {
+    setOpportunityId('');
+    setPeriod('30d');
+    setCustomFrom('');
+    setCustomTo('');
+  }
+
+  const rangeLabel = from || to ? `${formatDate(from) || '…'} — ${formatDate(to) || 'hoje'}` : 'Desde o primeiro disparo';
 
   return (
     <Layout title="Métricas de engajamento">
       <div className="card met-filters">
-        <div className="field">
-          <label>Oportunidade</label>
-          <select value={opportunityId} onChange={(e) => setOpportunityId(e.target.value)}>
-            <option value="">Todas</option>
-            {opportunities.map((o) => (
-              <option key={o.id} value={o.id}>
-                {o.title}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="field">
-          <label>De</label>
-          <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
-        </div>
-        <div className="field">
-          <label>Até</label>
-          <input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
-        </div>
+        <select className="input met-filter-period" value={period} onChange={(e) => setPeriod(e.target.value)}>
+          {PERIOD_OPTIONS.map((p) => (
+            <option key={p.value} value={p.value}>
+              Período: {p.label}
+            </option>
+          ))}
+        </select>
+
+        {period === 'custom' ? (
+          <div className="met-filter-range">
+            <input
+              className="input"
+              type="date"
+              aria-label="Data inicial"
+              value={customFrom}
+              max={customTo || undefined}
+              onChange={(e) => setCustomFrom(e.target.value)}
+            />
+            <span>até</span>
+            <input
+              className="input"
+              type="date"
+              aria-label="Data final"
+              value={customTo}
+              min={customFrom || undefined}
+              onChange={(e) => setCustomTo(e.target.value)}
+            />
+          </div>
+        ) : (
+          <span className="met-filter-range-label">{rangeLabel}</span>
+        )}
+
+        <select
+          className="input met-filter-opp"
+          value={opportunityId}
+          onChange={(e) => setOpportunityId(e.target.value)}
+        >
+          <option value="">Oportunidade: Todas</option>
+          {opportunities.map((o) => (
+            <option key={o.id} value={o.id}>
+              Oportunidade: {o.title}
+            </option>
+          ))}
+        </select>
+
+        <button type="button" className="btn btn-ghost" onClick={clearFilters}>
+          Limpar filtros
+        </button>
+
+        <p className="met-filters-note">RF-39 · métricas filtradas por período e por oportunidade</p>
       </div>
 
       {loading && <p className="opp-hint">Carregando…</p>}
@@ -83,72 +156,52 @@ export default function Metricas() {
       {!loading && !error && data && (
         <>
           <div className="met-kpis">
-            <div className="card met-kpi">
-              <strong>{data.dispatch.totalNotifications}</strong>
-              <span>Notificações enviadas</span>
-              <small>RF-37</small>
-            </div>
-            <div className="card met-kpi">
-              <strong>{data.dispatch.contactsReached}</strong>
-              <span>Contatos alcançados</span>
-              <small>RF-37</small>
-            </div>
-            <div className="card met-kpi">
-              <strong>{data.dispatch.deliveryRate}%</strong>
-              <span>Taxa de entrega</span>
-              <small>RF-37</small>
-            </div>
-            <div className="card met-kpi">
-              <strong>{data.dispatch.failed}</strong>
-              <span>Falhas de entrega</span>
-              <small>RF-37</small>
+            <StatCard value={data.dispatch.totalNotifications.toLocaleString('pt-BR')} label="Notificações enviadas" tag="RF-37" />
+            <StatCard value={data.dispatch.contactsReached.toLocaleString('pt-BR')} label="Contatos alcançados" tag="RF-37" />
+            <StatCard value={`${data.dispatch.deliveryRate}%`} label="Taxa de entrega" tag="RF-37" highlight />
+            <StatCard value="—" label="Respostas recebidas" tag="RF-38 · chega com o chatbot (Sprint 04)" />
+          </div>
+
+          <div className="met-row2">
+            <EngagementWeeklyChart weeklySeries={data.weeklySeries} />
+
+            <div className="card">
+              <h3>Status de entrega</h3>
+              <p className="opp-hint">RF-37 · status consolidado dos envios do período</p>
+              <DeliveryStatusItem
+                label="Entregues"
+                count={data.dispatch.delivered}
+                total={data.dispatch.totalNotifications}
+                modifier="ok"
+              />
+              <DeliveryStatusItem
+                label="Falhas"
+                count={data.dispatch.failed}
+                total={data.dispatch.totalNotifications}
+                modifier="fail"
+              />
+              <DeliveryStatusItem
+                label="Pendentes"
+                count={data.dispatch.pending}
+                total={data.dispatch.totalNotifications}
+                modifier="pending"
+              />
+              <p className="met-status-note">Somente envios do período filtrado · RF-39</p>
             </div>
           </div>
 
-          <div className="card met-chart-card">
-            <h3>Envios por semana</h3>
-            <p className="opp-hint">
-              RF-38 · status de entrega consolidado — respostas chegam com o chatbot na Sprint 04
-            </p>
-            {data.weeklySeries.length === 0 ? (
-              <p className="opp-hint">Nenhum disparo no período selecionado.</p>
-            ) : (
-              <div className="met-chart">
-                {data.weeklySeries.map((w) => (
-                  <div className="met-chart-col" key={w.week}>
-                    <div className="met-chart-bars">
-                      <div
-                        className="met-chart-bar met-chart-bar-ok"
-                        style={{ height: `${(w.enviado / maxWeekly) * 100}%` }}
-                        title={`${w.enviado} entregues`}
-                      />
-                      <div
-                        className="met-chart-bar met-chart-bar-fail"
-                        style={{ height: `${(w.falha / maxWeekly) * 100}%` }}
-                        title={`${w.falha} falhas`}
-                      />
-                      <div
-                        className="met-chart-bar met-chart-bar-pending"
-                        style={{ height: `${(w.pendente / maxWeekly) * 100}%` }}
-                        title={`${w.pendente} pendentes`}
-                      />
-                    </div>
-                    <span className="met-chart-label">{formatWeekLabel(w.week)}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-            <div className="met-chart-legend">
-              <span><i className="met-dot met-dot-ok" /> Entregues</span>
-              <span><i className="met-dot met-dot-fail" /> Falhas</span>
-              <span><i className="met-dot met-dot-pending" /> Pendentes</span>
+          <div className="met-row2">
+            <div className="card">
+              <h3>Dúvidas mais frequentes</h3>
+              <p className="opp-hint">RF-38 · intenções identificadas pelo chatbot no período</p>
+              <p className="met-empty">Ainda sem dados — chega com o Módulo C (chatbot) na Sprint 04.</p>
             </div>
-          </div>
 
-          <div className="card">
-            <h3>Dúvidas mais frequentes</h3>
-            <p className="opp-hint">RF-39 · identificadas pelo chatbot</p>
-            <p className="opp-hint">Ainda sem dados — chega com o Módulo C (chatbot) na Sprint 04.</p>
+            <div className="card">
+              <h3>Maior engajamento</h3>
+              <p className="opp-hint">RF-38 · taxa de resposta por oportunidade</p>
+              <p className="met-empty">Ainda sem dados — depende das respostas do chatbot (Sprint 04).</p>
+            </div>
           </div>
         </>
       )}
