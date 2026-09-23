@@ -5,7 +5,7 @@ import '../styles/layout.css';
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', end: true },
   { to: '/oportunidades', label: 'Oportunidades' },
-  { to: '/metricas', label: 'Métricas', disabled: true },
+  { to: '/metricas', label: 'Métricas' },
   { to: '/painel-escolar', label: 'Painel Escolar', disabled: true },
   { to: '/integracao', label: 'Integração', disabled: true },
   { to: '/sobre', label: 'Sobre Nós' },

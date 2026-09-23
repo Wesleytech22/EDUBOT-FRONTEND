@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import Layout from '../components/Layout.jsx';
 import api from '../services/api.js';
 import '../styles/dashboard.css';
@@ -8,19 +9,36 @@ function formatDateTime(value) {
   return new Date(value).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
 }
 
-// Dashboard com dados reais do módulo de Oportunidades (RF-01 a RF-03,
-// já concluído). Métricas de envio por contato, engajamento no FAQ e o
-// Painel Escolar dependem dos módulos B/C (WhatsApp/N8N) e F/H (Google
+// Dashboard com dados reais do módulo de Oportunidades (RF-01 a RF-03) e do
+// status de entrega por contato do broadcast (RF-06, Sprint 03). Engajamento
+// no FAQ e o Painel Escolar dependem dos módulos C (chatbot) e F/H (Google
 // Sheets), ainda não implementados — por isso aparecem como "ainda sem
 // dados", em vez de números fictícios.
 export default function Dashboard() {
   const [items, setItems] = useState(null);
+  const [deliveryByOpp, setDeliveryByOpp] = useState(new Map());
   const [error, setError] = useState('');
 
   useEffect(() => {
     (async () => {
       try {
-        const { data } = await api.get('/opportunities');
+        // O status de entrega é complementar: se /metrics/dispatch-logs
+        // falhar (ex.: backend ainda sem a Sprint 03), o Dashboard continua
+        // funcionando só com as oportunidades, como antes.
+        const [{ data }, logsData] = await Promise.all([
+          api.get('/opportunities'),
+          api
+            .get('/metrics/dispatch-logs')
+            .then((r) => r.data)
+            .catch(() => ({ items: [] })),
+        ]);
+        const delivery = new Map();
+        for (const log of logsData.items) {
+          const agg = delivery.get(log.opportunity.id) || { enviado: 0, falha: 0, pendente: 0 };
+          agg[log.status] += 1;
+          delivery.set(log.opportunity.id, agg);
+        }
+        setDeliveryByOpp(delivery);
         setItems(data.items);
       } catch (err) {
         setError(err.response?.data?.error || 'Não foi possível carregar o dashboard.');
@@ -118,21 +136,31 @@ export default function Dashboard() {
                   <th>Oportunidade</th>
                   <th>Público-alvo</th>
                   <th>Data do disparo</th>
+                  <th>Entregues</th>
+                  <th>Falhas</th>
+                  <th>Pendentes</th>
                 </tr>
               </thead>
               <tbody>
-                {lastDispatches.map((row) => (
-                  <tr key={row.id}>
-                    <td>{row.title}</td>
-                    <td>{row.targetAudience}</td>
-                    <td>{formatDateTime(row.dispatchedAt)}</td>
-                  </tr>
-                ))}
+                {lastDispatches.map((row) => {
+                  const d = deliveryByOpp.get(row.id) || { enviado: 0, falha: 0, pendente: 0 };
+                  return (
+                    <tr key={row.id}>
+                      <td>
+                        <Link to={`/oportunidades/${row.id}/disparo`}>{row.title}</Link>
+                      </td>
+                      <td>{row.targetAudience}</td>
+                      <td>{formatDateTime(row.dispatchedAt)}</td>
+                      <td>{d.enviado}</td>
+                      <td>{d.falha}</td>
+                      <td>{d.pendente}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         )}
-        <p className="dash-hint">Status de entrega por contato chega com o módulo de WhatsApp (Sprint 03).</p>
       </div>
     </Layout>
   );

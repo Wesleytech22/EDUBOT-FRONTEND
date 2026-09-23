@@ -5,6 +5,8 @@ import RedefinirSenha from './pages/RedefinirSenha.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Oportunidades from './pages/Oportunidades.jsx';
 import NovaOportunidade from './pages/NovaOportunidade.jsx';
+import ResultadoDisparo from './pages/ResultadoDisparo.jsx';
+import Metricas from './pages/Metricas.jsx';
 import SobreNos from './pages/SobreNos.jsx';
 import PrivateRoute from './components/PrivateRoute.jsx';
 
@@ -52,6 +54,24 @@ export default function App() {
       />
 
       <Route
+        path="/oportunidades/:id/disparo"
+        element={
+          <PrivateRoute roles={['administrador']}>
+            <ResultadoDisparo />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/metricas"
+        element={
+          <PrivateRoute>
+            <Metricas />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
         path="/sobre"
         element={
           <PrivateRoute>
@@ -60,7 +80,7 @@ export default function App() {
         }
       />
 
-      {/* Métricas, Painel Escolar e Integração ficam para as Sprints 05/06 */}
+      {/* Painel Escolar e Integração ficam para as Sprints 05/06 */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

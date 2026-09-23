@@ -132,6 +132,32 @@ textarea.input {
   font-weight: 500;
 }
 
+/* Anexo da oportunidade */
+.nova-opp-attachment {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 8px 12px;
+  border: 1px solid var(--border, #dee2ed);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2, #f7f8fc);
+}
+
+.nova-opp-attachment-name {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.nova-opp-attachment .btn {
+  padding: 4px 10px;
+}
+
+.nova-opp-file {
+  padding: 8px;
+  cursor: pointer;
+}
+
 @media (max-width: 960px) {
   .nova-opp-grid {
     grid-template-columns: 1fr;
