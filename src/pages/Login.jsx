@@ -12,21 +12,40 @@ const RESET_SUCCESS_TIMEOUT_MS = 6000;
 
 const RELEASE_NOTES = {
   sprint: 'Sprint 03',
-  updatedAt: '10/09/2026',
+  updatedAt: '23/09/2026',
   shipped: [
     {
-      title: 'Nova tela "Sobre Nós"',
+      title: 'Disparo em massa das oportunidades',
       description:
-        'Conheça a equipe de desenvolvimento do EduBot — foto, cargo e bio de cada integrante, disponível no menu lateral.',
+        'O botão Disparar envia a oportunidade para todos os contatos com opt-in, sem editar a mensagem contato a contato.',
+    },
+    {
+      title: 'Nova tela "Resultado do Disparo"',
+      description:
+        'Enviados, entregues, falhas e taxa de entrega, com o motivo de cada falha e a opção de reenviar só para quem falhou.',
+    },
+    {
+      title: 'Nova tela "Métricas de engajamento"',
+      description:
+        'Envios por semana e status de entrega consolidado, com filtros por período e por oportunidade.',
+    },
+    {
+      title: 'Status de entrega no Dashboard',
+      description: 'Os últimos disparos mostram entregues, falhas e pendentes de cada oportunidade.',
+    },
+    {
+      title: 'Correção na edição de oportunidades',
+      description: 'Oportunidades já publicadas voltam a ser salvas com "Salvar alterações", sem virar rascunho.',
     },
   ],
   inProgress: [
     {
-      title: 'Broadcast via WhatsApp',
-      description: 'Objetivo central desta sprint, ainda em desenvolvimento.',
+      title: 'Entrega das mensagens no celular',
+      description: 'O disparo já está pronto; a entrega real aguarda a conexão do número de WhatsApp da escola.',
     },
   ],
   upcoming: [
+    { sprint: 'Sprint 04', title: 'Chatbot com opt-in/opt-out e fila de atendimento' },
     { sprint: 'Sprint 04', title: 'Estrela da Cruzeiro na identidade visual do produto' },
     { sprint: 'Sprint 05', title: 'Segurança da informação (backup dos dados escolares)' },
   ],
