@@ -18,6 +18,12 @@
   align-items: start;
 }
 
+/* Itens de grid não encolhem abaixo do conteúdo por padrão: um texto sem
+   espaços (ex.: link longo) esticava a coluna e empurrava a página. */
+.nova-opp-grid > * {
+  min-width: 0;
+}
+
 .nova-opp-form h3,
 .nova-opp-side h3 {
   margin: 0 0 2px;
@@ -83,6 +89,7 @@ textarea.input {
   margin: 0;
   font-size: 13px;
   white-space: pre-wrap;
+  overflow-wrap: anywhere;
   color: var(--t900);
 }
 
