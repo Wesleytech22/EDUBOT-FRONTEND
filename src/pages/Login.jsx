@@ -12,7 +12,7 @@ const RESET_SUCCESS_TIMEOUT_MS = 6000;
 
 const RELEASE_NOTES = {
   sprint: 'Sprint 04',
-  updatedAt: '23/09/2026',
+  updatedAt: '05/10/2026',
   shipped: [
     {
       title: 'Chatbot com opt-in e opt-out',
@@ -30,9 +30,14 @@ const RELEASE_NOTES = {
         'Respostas recebidas, dúvidas mais frequentes e taxa de resposta por oportunidade, com filtros por período e por oportunidade.',
     },
     {
-      title: 'Disparo com reenvio para falhas',
+      title: 'Anexo da oportunidade enviado ao aluno',
       description:
-        'O resultado do disparo mostra o status de cada contato e permite reenviar só para quem falhou, sem duplicar entregas.',
+        'O arquivo anexado à oportunidade passa a ser enviado de verdade no disparo, e o campo de anexo aceita upload de arquivo.',
+    },
+    {
+      title: 'Correções em Oportunidades',
+      description:
+        'O filtro por público-alvo "Todos" ficou exato, links longos não quebram mais o layout e oportunidades já disparadas não voltam a rascunho.',
     },
     {
       title: 'Marca Lumen Forge no login e no menu lateral',
@@ -47,11 +52,12 @@ const RELEASE_NOTES = {
     },
     {
       title: 'Estrela da Cruzeiro na identidade visual do produto',
-      description: 'Prevista para esta sprint, ainda em desenvolvimento.',
+      description: 'Ainda em desenvolvimento.',
     },
   ],
   upcoming: [
-    { sprint: 'Sprint 05', title: 'Segurança da informação (backup dos dados escolares)' },
+    { sprint: 'Sprint 05', title: 'Segurança da informação: backup do banco de dados escolar' },
+    { sprint: 'Sprint 05', title: 'Conclusão do painel de Métricas de Engajamento com dados reais' },
     { sprint: 'Sprint 06', title: 'Painel Escolar com os dados sincronizados do Google Sheets' },
   ],
   testAccess: [
