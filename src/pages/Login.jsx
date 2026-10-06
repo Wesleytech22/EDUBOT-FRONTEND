@@ -46,9 +46,9 @@ const RELEASE_NOTES = {
   ],
   inProgress: [
     {
-      title: 'Canal de mensagens',
+      title: 'Disparo de oportunidades pelo Telegram',
       description:
-        'Telegram validado em testes, enquanto o WhatsApp aguarda a liberação do pareamento do número da escola.',
+        'O chatbot já atende pelo Telegram; o envio em massa das oportunidades por esse canal está na fase final de publicação.',
     },
     {
       title: 'Estrela da Cruzeiro na identidade visual do produto',
