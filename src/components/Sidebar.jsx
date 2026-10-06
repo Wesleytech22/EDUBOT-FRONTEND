@@ -7,8 +7,9 @@ const NAV_ITEMS = [
   { to: '/oportunidades', label: 'Oportunidades' },
   { to: '/metricas', label: 'Métricas' },
   { to: '/atendimento', label: 'Atendimento' },
-  { to: '/painel-escolar', label: 'Painel Escolar', disabled: true },
-  { to: '/integracao', label: 'Integração', disabled: true },
+  // Módulos ainda não liberados: "sprint" informa no tooltip quando chegam.
+  { to: '/painel-escolar', label: 'Painel Escolar', disabled: true, sprint: 'Sprint 05' },
+  { to: '/integracao', label: 'Integração', disabled: true, sprint: 'Sprint 05' },
   { to: '/sobre', label: 'Sobre Nós' },
 ];
 
@@ -21,7 +22,11 @@ export default function Sidebar() {
       <nav className="sidebar-nav">
         {NAV_ITEMS.map((item) =>
           item.disabled ? (
-            <span key={item.to} className="nav-item nav-item-disabled" title="Fora do escopo da Sprint 02">
+            <span
+              key={item.to}
+              className="nav-item nav-item-disabled"
+              title={item.sprint ? `Disponível na ${item.sprint}` : 'Em breve'}
+            >
               <span className="dot" />
               {item.label}
             </span>
