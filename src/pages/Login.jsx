@@ -57,8 +57,7 @@ const RELEASE_NOTES = {
   ],
   upcoming: [
     { sprint: 'Sprint 05', title: 'Segurança da informação: backup do banco de dados escolar' },
-    { sprint: 'Sprint 05', title: 'Conclusão do painel de Métricas de Engajamento com dados reais' },
-    { sprint: 'Sprint 06', title: 'Painel Escolar com os dados sincronizados do Google Sheets' },
+    { sprint: 'Sprint 05', title: 'Painel Escolar com os dados sincronizados do Google Sheets' },
   ],
   testAccess: [
     { role: 'Administrador', email: 'wealeyr537@gmail.com', password: 'LumenforgeDPTI' },
