@@ -11,43 +11,48 @@ const LOGOUT_REASON_MESSAGES = {
 const RESET_SUCCESS_TIMEOUT_MS = 6000;
 
 const RELEASE_NOTES = {
-  sprint: 'Sprint 03',
+  sprint: 'Sprint 04',
   updatedAt: '23/09/2026',
   shipped: [
     {
-      title: 'Disparo em massa das oportunidades',
+      title: 'Chatbot com opt-in e opt-out',
       description:
-        'O botão Disparar envia a oportunidade para todos os contatos com opt-in, sem editar a mensagem contato a contato.',
+        'Alunos e famílias se inscrevem com ENTRAR e cancelam com SAIR. MENU lista as oportunidades ativas, e perguntas pelo nome de uma oportunidade são respondidas automaticamente.',
     },
     {
-      title: 'Nova tela "Resultado do Disparo"',
+      title: 'Nova tela "Atendimento"',
       description:
-        'Enviados, entregues, falhas e taxa de entrega, com o motivo de cada falha e a opção de reenviar só para quem falhou.',
+        'Dúvidas que o chatbot não resolve (ou em que o contato pede ATENDENTE) chegam numa fila para a equipe responder e marcar como atendidas.',
     },
     {
-      title: 'Nova tela "Métricas de engajamento"',
+      title: 'Métricas de engajamento completas',
       description:
-        'Envios por semana e status de entrega consolidado, com filtros por período e por oportunidade.',
+        'Respostas recebidas, dúvidas mais frequentes e taxa de resposta por oportunidade, com filtros por período e por oportunidade.',
     },
     {
-      title: 'Status de entrega no Dashboard',
-      description: 'Os últimos disparos mostram entregues, falhas e pendentes de cada oportunidade.',
+      title: 'Disparo com reenvio para falhas',
+      description:
+        'O resultado do disparo mostra o status de cada contato e permite reenviar só para quem falhou, sem duplicar entregas.',
     },
     {
-      title: 'Correção na edição de oportunidades',
-      description: 'Oportunidades já publicadas voltam a ser salvas com "Salvar alterações", sem virar rascunho.',
+      title: 'Marca Lumen Forge no login e no menu lateral',
+      description: 'A identidade visual do time passa a aparecer no fundo do login e da sidebar.',
     },
   ],
   inProgress: [
     {
-      title: 'Entrega das mensagens no celular',
-      description: 'O disparo já está pronto; a entrega real aguarda a conexão do número de WhatsApp da escola.',
+      title: 'Canal de mensagens',
+      description:
+        'Telegram validado em testes, enquanto o WhatsApp aguarda a liberação do pareamento do número da escola.',
+    },
+    {
+      title: 'Estrela da Cruzeiro na identidade visual do produto',
+      description: 'Prevista para esta sprint, ainda em desenvolvimento.',
     },
   ],
   upcoming: [
-    { sprint: 'Sprint 04', title: 'Chatbot com opt-in/opt-out e fila de atendimento' },
-    { sprint: 'Sprint 04', title: 'Estrela da Cruzeiro na identidade visual do produto' },
     { sprint: 'Sprint 05', title: 'Segurança da informação (backup dos dados escolares)' },
+    { sprint: 'Sprint 06', title: 'Painel Escolar com os dados sincronizados do Google Sheets' },
   ],
   testAccess: [
     { role: 'Administrador', email: 'wealeyr537@gmail.com', password: 'LumenforgeDPTI' },
