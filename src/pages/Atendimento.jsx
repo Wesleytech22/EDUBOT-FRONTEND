@@ -83,7 +83,7 @@ export default function Atendimento() {
       <div className="card">
         <h3>Solicitações encaminhadas pelo chatbot</h3>
         <p className="opp-hint">
-          RF-09 · dúvidas que o fluxo automático não resolveu ou em que o contato pediu ATENDENTE. Responda pelo
+          Dúvidas que o fluxo automático não resolveu ou em que o contato pediu ATENDENTE. Responda pelo
           WhatsApp da escola e marque como atendida.
         </p>
 

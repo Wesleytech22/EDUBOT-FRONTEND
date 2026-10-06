@@ -145,7 +145,7 @@ export default function Metricas() {
           Limpar filtros
         </button>
 
-        <p className="met-filters-note">RF-39 · métricas filtradas por período e por oportunidade</p>
+        <p className="met-filters-note">Métricas filtradas por período e por oportunidade</p>
       </div>
 
       {loading && <p className="opp-hint">Carregando…</p>}
@@ -154,10 +154,10 @@ export default function Metricas() {
       {!loading && !error && data && (
         <>
           <div className="met-kpis">
-            <StatCard value={data.dispatch.totalNotifications.toLocaleString('pt-BR')} label="Notificações enviadas" tag="RF-37" />
-            <StatCard value={data.dispatch.contactsReached.toLocaleString('pt-BR')} label="Contatos alcançados" tag="RF-37" />
-            <StatCard value={`${data.dispatch.deliveryRate}%`} label="Taxa de entrega" tag="RF-37" highlight />
-            <StatCard value={data.chatbot.responsesReceived.toLocaleString('pt-BR')} label="Respostas recebidas" tag="RF-38" />
+            <StatCard value={data.dispatch.totalNotifications.toLocaleString('pt-BR')} label="Notificações enviadas" />
+            <StatCard value={data.dispatch.contactsReached.toLocaleString('pt-BR')} label="Contatos alcançados" />
+            <StatCard value={`${data.dispatch.deliveryRate}%`} label="Taxa de entrega" highlight />
+            <StatCard value={data.chatbot.responsesReceived.toLocaleString('pt-BR')} label="Respostas recebidas" />
           </div>
 
           <div className="met-row2">
@@ -165,7 +165,7 @@ export default function Metricas() {
 
             <div className="card">
               <h3>Status de entrega</h3>
-              <p className="opp-hint">RF-37 · status consolidado dos envios do período</p>
+              <p className="opp-hint">Status consolidado dos envios do período</p>
               <DeliveryStatusItem
                 label="Entregues"
                 count={data.dispatch.delivered}
@@ -184,14 +184,14 @@ export default function Metricas() {
                 total={data.dispatch.totalNotifications}
                 modifier="pending"
               />
-              <p className="met-status-note">Somente envios do período filtrado · RF-39</p>
+              <p className="met-status-note">Somente envios do período filtrado</p>
             </div>
           </div>
 
           <div className="met-row2">
             <div className="card">
               <h3>Dúvidas mais frequentes</h3>
-              <p className="opp-hint">RF-38 · intenções identificadas pelo chatbot no período</p>
+              <p className="opp-hint">Intenções identificadas pelo chatbot no período</p>
               {data.chatbot.topQuestions.length === 0 ? (
                 <p className="met-empty">Nenhuma dúvida recebida pelo chatbot no período.</p>
               ) : (
@@ -212,7 +212,7 @@ export default function Metricas() {
 
             <div className="card">
               <h3>Maior engajamento</h3>
-              <p className="opp-hint">RF-38 · taxa de resposta por oportunidade</p>
+              <p className="opp-hint">Taxa de resposta por oportunidade</p>
               {data.chatbot.topEngagement.length === 0 ? (
                 <p className="met-empty">Nenhuma oportunidade entregue no período.</p>
               ) : (

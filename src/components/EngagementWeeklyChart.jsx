@@ -16,7 +16,7 @@ export default function EngagementWeeklyChart({ weeklySeries }) {
   return (
     <div className="card">
       <h3>Envios e respostas por semana</h3>
-      <p className="opp-hint">RF-37 e RF-38 · envios agregados e respostas recebidas no período</p>
+      <p className="opp-hint">Envios agregados e respostas recebidas no período</p>
       {weeklySeries.length === 0 ? (
         <p className="opp-hint">Nenhum disparo no período selecionado.</p>
       ) : (

@@ -98,7 +98,7 @@ export default function ResultadoDisparo() {
         <>
           <div className="card" style={{ marginBottom: 20 }}>
             <h3>{opportunity?.title}</h3>
-            <p className="opp-hint">RF-06 · log de envio por destinatário, com status de entrega</p>
+            <p className="opp-hint">Log de envio por destinatário, com status de entrega</p>
           </div>
 
           <div className="rd-kpis">
