@@ -27,8 +27,8 @@ function formatPercent(value) {
 // sobre os dados sincronizados, exportação em CSV e o carimbo da última
 // sincronização (com a falha à mostra, se a última tentativa falhou).
 export default function PainelEscolar() {
-  const { user } = useAuth();
-  const isAdmin = user?.role === 'administrador';
+  // Inclui o Administrador da plataforma dentro da escola que ele abriu.
+  const { isAdmin } = useAuth();
 
   const [items, setItems] = useState([]);
   const [grades, setGrades] = useState([]);

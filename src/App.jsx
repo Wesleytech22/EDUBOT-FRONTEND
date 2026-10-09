@@ -11,6 +11,7 @@ import SobreNos from './pages/SobreNos.jsx';
 import Atendimento from './pages/Atendimento.jsx';
 import Integracao from './pages/Integracao.jsx';
 import PainelEscolar from './pages/PainelEscolar.jsx';
+import Escolas from './pages/Escolas.jsx';
 import PrivateRoute from './components/PrivateRoute.jsx';
 
 export default function App() {
@@ -102,9 +103,18 @@ export default function App() {
       />
 
       <Route
+        path="/escolas"
+        element={
+          <PrivateRoute roles={['super_admin']} needsSchool={false}>
+            <Escolas />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
         path="/sobre"
         element={
-          <PrivateRoute>
+          <PrivateRoute needsSchool={false}>
             <SobreNos />
           </PrivateRoute>
         }

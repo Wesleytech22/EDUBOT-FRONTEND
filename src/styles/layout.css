@@ -110,6 +110,40 @@
   margin: 0;
 }
 
+.topbar-right {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.topbar-school {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--b100);
+  color: var(--b700);
+  border-radius: 999px;
+  padding: 8px 8px 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.topbar-school-name {
+  overflow-wrap: anywhere;
+}
+
+.topbar-switch {
+  border: none;
+  background: var(--surface);
+  color: var(--b700);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
 .topbar-profile {
   display: flex;
   align-items: center;

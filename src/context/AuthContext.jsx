@@ -8,12 +8,26 @@ const AuthContext = createContext(null);
 const INACTIVITY_TIMEOUT_MS = (Number(import.meta.env.VITE_INACTIVITY_TIMEOUT_MINUTES) || 30) * 60 * 1000;
 const ACTIVITY_EVENTS = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart'];
 
+// Multi-escola — escola aberta pelo Administrador da plataforma. A API lê o
+// mesmo valor (services/api.js) para mandar o cabeçalho X-School-Id.
+export const SCHOOL_STORAGE_KEY = 'edubot_school';
+
+function readStoredSchool() {
+  try {
+    const stored = localStorage.getItem(SCHOOL_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : null;
+  } catch {
+    return null;
+  }
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     const stored = localStorage.getItem('edubot_user');
     return stored ? JSON.parse(stored) : null;
   });
   const [loading, setLoading] = useState(false);
+  const [platformSchool, setPlatformSchool] = useState(readStoredSchool);
 
   useEffect(() => {
     if (user) {
@@ -28,6 +42,8 @@ export function AuthProvider({ children }) {
     try {
       const { data } = await api.post('/auth/login', { email, password });
       localStorage.setItem('edubot_token', data.token);
+      localStorage.removeItem(SCHOOL_STORAGE_KEY);
+      setPlatformSchool(null);
       setUser(data.user);
       return data.user;
     } finally {
@@ -37,10 +53,24 @@ export function AuthProvider({ children }) {
 
   const logout = useCallback((reason) => {
     localStorage.removeItem('edubot_token');
+    localStorage.removeItem(SCHOOL_STORAGE_KEY);
     if (reason) {
       localStorage.setItem('edubot_logout_reason', reason);
     }
+    setPlatformSchool(null);
     setUser(null);
+  }, []);
+
+  // Administrador da plataforma: abre (ou fecha) o painel de uma escola.
+  const selectSchool = useCallback((school) => {
+    const value = { id: school.id, name: school.name };
+    localStorage.setItem(SCHOOL_STORAGE_KEY, JSON.stringify(value));
+    setPlatformSchool(value);
+  }, []);
+
+  const leaveSchool = useCallback(() => {
+    localStorage.removeItem(SCHOOL_STORAGE_KEY);
+    setPlatformSchool(null);
   }, []);
 
   const logoutRef = useRef(logout);
@@ -64,8 +94,31 @@ export function AuthProvider({ children }) {
     };
   }, [user]);
 
+  const isPlatformAdmin = user?.role === 'super_admin';
+  // Dentro de uma escola, o Administrador da plataforma pode o mesmo que o
+  // Administrador dela.
+  const isAdmin = user?.role === 'administrador' || isPlatformAdmin;
+  const activeSchool = isPlatformAdmin
+    ? platformSchool
+    : user?.schoolId
+      ? { id: user.schoolId, name: user.schoolName }
+      : null;
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading, isAuthenticated: Boolean(user) }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        login,
+        logout,
+        loading,
+        isAuthenticated: Boolean(user),
+        isAdmin,
+        isPlatformAdmin,
+        activeSchool,
+        selectSchool,
+        leaveSchool,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

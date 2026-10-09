@@ -9,6 +9,15 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  // Multi-escola — escola aberta pelo Administrador da plataforma (ver
+  // AuthContext). Para as contas de escola, o backend ignora o cabeçalho e
+  // usa sempre a escola da própria conta.
+  try {
+    const school = JSON.parse(localStorage.getItem('edubot_school') || 'null');
+    if (school?.id) config.headers['X-School-Id'] = school.id;
+  } catch {
+    // valor corrompido no navegador — segue sem escola escolhida
+  }
   return config;
 });
 
@@ -19,6 +28,7 @@ api.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       localStorage.removeItem('edubot_token');
       localStorage.removeItem('edubot_user');
+      localStorage.removeItem('edubot_school');
       if (window.location.pathname !== '/login') {
         localStorage.setItem('edubot_logout_reason', 'expired');
         window.location.href = '/login';

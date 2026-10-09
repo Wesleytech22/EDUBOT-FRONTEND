@@ -21,8 +21,8 @@ function formatDate(value) {
 
 export default function Oportunidades() {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const isAdmin = user?.role === 'administrador';
+  // Inclui o Administrador da plataforma dentro da escola que ele abriu.
+  const { isAdmin } = useAuth();
   const [items, setItems] = useState([]);
   const [audiences, setAudiences] = useState([]);
   const [search, setSearch] = useState('');

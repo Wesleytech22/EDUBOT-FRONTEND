@@ -42,8 +42,8 @@ function formatDateTime(value) {
 // (leitura ao vivo) ou anexar um CSV exportado dela, para escolas que
 // preferem não compartilhar o link. A Equipe da Escola só consulta.
 export default function Integracao() {
-  const { user } = useAuth();
-  const isAdmin = user?.role === 'administrador';
+  // Inclui o Administrador da plataforma dentro da escola que ele abriu.
+  const { isAdmin } = useAuth();
   const fileInputRef = useRef(null);
 
   const [config, setConfig] = useState(null);

@@ -1,0 +1,146 @@
+@import './tokens.css';
+
+.sch-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.sch-head .opp-hint {
+  margin: 0;
+}
+
+.sch-success {
+  background: var(--g100);
+  color: var(--g600);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+}
+
+.sch-form {
+  margin-bottom: 20px;
+}
+
+.sch-form h3,
+.sch-card h3 {
+  margin: 0 0 4px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.sch-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.sch-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sch-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.sch-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sch-counts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.sch-counts div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--alt);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+}
+
+.sch-counts strong {
+  font-size: 22px;
+}
+
+.sch-counts span {
+  font-size: 12px;
+  color: var(--t600);
+}
+
+.sch-link {
+  font-size: 13px;
+  color: var(--t600);
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  overflow-wrap: anywhere;
+}
+
+.sch-copy {
+  border: 1px solid var(--bd);
+  background: var(--surface);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--t600);
+}
+
+.sch-accounts {
+  margin-top: 16px;
+  border-top: 1px solid var(--bd);
+  padding-top: 16px;
+}
+
+.sch-user-form {
+  display: grid;
+  grid-template-columns: 1.2fr 1.4fr 1.2fr 1fr auto;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+@media (max-width: 1100px) {
+  .sch-user-form {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .sch-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sch-card-head,
+  .sch-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sch-counts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .sch-user-form {
+    grid-template-columns: 1fr;
+  }
+}

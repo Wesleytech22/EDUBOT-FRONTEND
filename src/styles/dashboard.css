@@ -180,3 +180,32 @@
   font-size: 12px;
   color: var(--t600);
 }
+
+.dash-chatbot-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin-bottom: 20px;
+}
+
+.dash-chatbot-link > div:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dash-chatbot-link span {
+  font-size: 13px;
+  color: var(--t600);
+}
+
+.dash-chatbot-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}

@@ -12,14 +12,22 @@ const NAV_ITEMS = [
   { to: '/sobre', label: 'Sobre Nós' },
 ];
 
+// Multi-escola — o Administrador da plataforma tem a lista de escolas no
+// topo e só vê os módulos de escola depois de abrir uma delas.
+const PLATFORM_ITEM = { to: '/escolas', label: 'Escolas' };
+const GLOBAL_PATHS = ['/sobre'];
+
 export default function Sidebar() {
-  const { logout } = useAuth();
+  const { logout, isPlatformAdmin, activeSchool } = useAuth();
+  const visibleItems = isPlatformAdmin
+    ? [PLATFORM_ITEM, ...NAV_ITEMS.filter((item) => activeSchool || GLOBAL_PATHS.includes(item.to))]
+    : NAV_ITEMS;
 
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">EduBot</div>
       <nav className="sidebar-nav">
-        {NAV_ITEMS.map((item) =>
+        {visibleItems.map((item) =>
           item.disabled ? (
             <span
               key={item.to}

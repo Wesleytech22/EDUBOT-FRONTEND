@@ -19,6 +19,8 @@ export default function Dashboard() {
   const [deliveryByOpp, setDeliveryByOpp] = useState(new Map());
   const [error, setError] = useState('');
   const [school, setSchool] = useState(null);
+  const [schoolInfo, setSchoolInfo] = useState(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -47,6 +49,12 @@ export default function Dashboard() {
         Promise.all([api.get('/students/summary'), api.get('/students/sync-status')])
           .then(([summary, status]) => setSchool({ ...summary.data, ...status.data }))
           .catch(() => setSchool(null));
+
+        // Link de entrada no chatbot desta escola, para a coordenação divulgar.
+        api
+          .get('/schools/current')
+          .then((r) => setSchoolInfo(r.data))
+          .catch(() => setSchoolInfo(null));
       } catch (err) {
         setError(err.response?.data?.error || 'Não foi possível carregar o dashboard.');
       }
@@ -90,8 +98,35 @@ export default function Dashboard() {
     .sort((a, b) => new Date(b.dispatchedAt) - new Date(a.dispatchedAt))
     .slice(0, 5);
 
+  async function copyChatbotLink() {
+    try {
+      await navigator.clipboard.writeText(schoolInfo.telegramLink);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      window.prompt('Copie o link do chatbot:', schoolInfo.telegramLink);
+    }
+  }
+
   return (
     <Layout title="Dashboard">
+      {schoolInfo?.telegramLink && (
+        <div className="card dash-chatbot-link">
+          <div>
+            <strong>Link do chatbot da escola</strong>
+            <span>Divulgue para alunos e famílias se inscreverem pelo Telegram.</span>
+          </div>
+          <div className="dash-chatbot-actions">
+            <a href={schoolInfo.telegramLink} target="_blank" rel="noreferrer">
+              {schoolInfo.telegramLink}
+            </a>
+            <button type="button" className="btn btn-secondary" onClick={copyChatbotLink}>
+              {copied ? 'Copiado!' : 'Copiar link'}
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="dash-kpis">
         {kpis.map((kpi) => (
           <div className="card dash-kpi" key={kpi.label}>
