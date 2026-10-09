@@ -56,9 +56,13 @@ const RELEASE_NOTES = {
     },
   ],
   upcoming: [
-    { sprint: 'Sprint 05', title: 'Segurança da informação: backup do banco de dados escolar' },
-    { sprint: 'Sprint 05', title: 'Painel Escolar com os dados sincronizados do Google Sheets' },
-    { sprint: 'Sprint 05', title: 'Integração com o Google Sheets configurada pela própria plataforma' },
+    { sprint: 'Sprint 05', title: 'Segurança da informação: backup automático do banco de dados escolar' },
+    {
+      sprint: 'Sprint 05',
+      title: 'Integração com o Google Sheets: o Administrador conecta a planilha da escola (link ou arquivo CSV) pela própria plataforma',
+    },
+    { sprint: 'Sprint 05', title: 'Sincronização automática dos dados da planilha, com histórico de sucessos e falhas' },
+    { sprint: 'Sprint 05', title: 'Painel Escolar: frequência e situação dos alunos, com busca, filtros e exportação em CSV' },
   ],
   testAccess: [
     { role: 'Administrador', email: 'wealeyr537@gmail.com', password: 'LumenforgeDPTI' },
@@ -149,7 +153,7 @@ export default function Login() {
                 ))}
               </ul>
 
-              <p className="login-release-notes-next-label">Próximas sprints</p>
+              <p className="login-release-notes-next-label">Próxima sprint · última etapa do projeto</p>
               <ul className="login-release-notes-next-list">
                 {RELEASE_NOTES.upcoming.map((item) => (
                   <li key={item.title}>
