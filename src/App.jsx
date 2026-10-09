@@ -9,6 +9,7 @@ import ResultadoDisparo from './pages/ResultadoDisparo.jsx';
 import Metricas from './pages/Metricas.jsx';
 import SobreNos from './pages/SobreNos.jsx';
 import Atendimento from './pages/Atendimento.jsx';
+import Integracao from './pages/Integracao.jsx';
 import PrivateRoute from './components/PrivateRoute.jsx';
 
 export default function App() {
@@ -82,6 +83,15 @@ export default function App() {
       />
 
       <Route
+        path="/integracao"
+        element={
+          <PrivateRoute>
+            <Integracao />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
         path="/sobre"
         element={
           <PrivateRoute>
@@ -90,7 +100,7 @@ export default function App() {
         }
       />
 
-      {/* Painel Escolar e Integração ficam para as Sprints 05/06 */}
+      {/* Painel Escolar ainda não liberado (Sprint 05) */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
