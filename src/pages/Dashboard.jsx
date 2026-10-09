@@ -121,7 +121,7 @@ export default function Dashboard() {
         <div className="card">
           <h3>Painel escolar</h3>
           <p className="dash-hint">Dados lidos do Google Sheets</p>
-          <p className="opp-hint">Ainda sem dados — a integração com o Google Sheets chega na Sprint 05/06.</p>
+          <p className="opp-hint">Ainda sem dados — a integração com o Google Sheets chega na Sprint 05.</p>
         </div>
       </div>
 

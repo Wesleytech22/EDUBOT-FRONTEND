@@ -9,7 +9,7 @@ const NAV_ITEMS = [
   { to: '/atendimento', label: 'Atendimento' },
   // Módulos ainda não liberados: "sprint" informa no tooltip quando chegam.
   { to: '/painel-escolar', label: 'Painel Escolar', disabled: true, sprint: 'Sprint 05' },
-  { to: '/integracao', label: 'Integração', disabled: true, sprint: 'Sprint 06' },
+  { to: '/integracao', label: 'Integração', disabled: true, sprint: 'Sprint 05' },
   { to: '/sobre', label: 'Sobre Nós' },
 ];
 

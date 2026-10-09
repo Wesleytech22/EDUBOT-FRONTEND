@@ -58,6 +58,7 @@ const RELEASE_NOTES = {
   upcoming: [
     { sprint: 'Sprint 05', title: 'Segurança da informação: backup do banco de dados escolar' },
     { sprint: 'Sprint 05', title: 'Painel Escolar com os dados sincronizados do Google Sheets' },
+    { sprint: 'Sprint 05', title: 'Integração com o Google Sheets configurada pela própria plataforma' },
   ],
   testAccess: [
     { role: 'Administrador', email: 'wealeyr537@gmail.com', password: 'LumenforgeDPTI' },
