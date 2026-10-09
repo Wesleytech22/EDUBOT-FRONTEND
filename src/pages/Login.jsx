@@ -63,6 +63,10 @@ const RELEASE_NOTES = {
     },
     { sprint: 'Sprint 05', title: 'Sincronização automática dos dados da planilha, com histórico de sucessos e falhas' },
     { sprint: 'Sprint 05', title: 'Painel Escolar: frequência e situação dos alunos, com busca, filtros e exportação em CSV' },
+    {
+      sprint: 'Sprint 05',
+      title: 'Várias escolas na mesma plataforma: cada escola com o próprio painel, oportunidades, chatbot e equipe',
+    },
   ],
   testAccess: [
     { role: 'Administrador', email: 'wealeyr537@gmail.com', password: 'LumenforgeDPTI' },
