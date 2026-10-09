@@ -1,13 +1,36 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Layout from '../components/Layout.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import api from '../services/api.js';
+import '../styles/oportunidades.css';
 import '../styles/integracao.css';
 
 const MODES = [
   { value: 'api', label: 'Colar link' },
   { value: 'upload', label: 'Anexar arquivo CSV' },
 ];
+
+const INTERVAL_LABELS = {
+  0: 'Somente manual',
+  15: 'A cada 15 minutos',
+  30: 'A cada 30 minutos',
+  60: 'A cada hora',
+  360: 'A cada 6 horas',
+  1440: 'Uma vez por dia',
+};
+
+const RUN_STYLE = {
+  sucesso: { bg: 'var(--g100)', fg: 'var(--g600)', label: 'Sucesso' },
+  falha: { bg: 'var(--r100)', fg: 'var(--r600)', label: 'Falha' },
+};
+
+// Mensagem de retorno de "salvar link"/"enviar arquivo", que já sincronizam.
+function syncResultMessage(prefix, sync) {
+  if (!sync) return { ok: true, text: prefix };
+  return sync.status === 'sucesso'
+    ? { ok: true, text: `${prefix} ${sync.detail}` }
+    : { ok: false, text: `${prefix} Mas a sincronização falhou: ${sync.detail}` };
+}
 
 function formatDateTime(value) {
   if (!value) return '—';
@@ -33,6 +56,11 @@ export default function Integracao() {
   const [saveError, setSaveError] = useState('');
   const [saveSuccess, setSaveSuccess] = useState('');
 
+  const [runs, setRuns] = useState([]);
+  const [syncing, setSyncing] = useState(false);
+  const [syncMessage, setSyncMessage] = useState(null);
+  const [intervalSaving, setIntervalSaving] = useState(false);
+
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewError, setPreviewError] = useState('');
   const [preview, setPreview] = useState(null);
@@ -43,6 +71,19 @@ export default function Integracao() {
     setSheetUrl(data.sheetId ? `https://docs.google.com/spreadsheets/d/${data.sheetId}/edit` : '');
     setSheetRange(data.sheetRange || 'A:E');
   }
+
+  const loadRuns = useCallback(async () => {
+    try {
+      const { data } = await api.get('/integrations/sheets/sync-runs', { params: { limit: 10 } });
+      setRuns(data.items);
+    } catch {
+      // o histórico é complementar — não bloqueia a configuração
+    }
+  }, []);
+
+  useEffect(() => {
+    loadRuns();
+  }, [loadRuns]);
 
   useEffect(() => {
     (async () => {
@@ -71,7 +112,10 @@ export default function Integracao() {
     try {
       const { data } = await api.put('/integrations/sheets/config', { sheetUrl, sheetRange });
       applyConfig(data.config);
-      setSaveSuccess('Link salvo — a plataforma passa a ler a planilha diretamente do Google Sheets.');
+      const message = syncResultMessage('Link salvo.', data.sync);
+      if (message.ok) setSaveSuccess(message.text);
+      else setSaveError(message.text);
+      loadRuns();
     } catch (err) {
       setSaveError(err.response?.data?.error || 'Não foi possível salvar o link.');
     } finally {
@@ -95,12 +139,46 @@ export default function Integracao() {
       formData.append('file', file);
       const { data } = await api.post('/integrations/sheets/upload', formData);
       applyConfig(data.config);
-      setSaveSuccess(`Arquivo enviado — ${data.rowCount} linha(s) lida(s).`);
+      const message = syncResultMessage('Arquivo enviado.', data.sync);
+      if (message.ok) setSaveSuccess(message.text);
+      else setSaveError(message.text);
+      loadRuns();
       if (fileInputRef.current) fileInputRef.current.value = '';
     } catch (err) {
       setSaveError(err.response?.data?.error || 'Não foi possível enviar o arquivo.');
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleIntervalChange(e) {
+    const syncIntervalMinutes = Number(e.target.value);
+    setIntervalSaving(true);
+    setSyncMessage(null);
+    try {
+      const { data } = await api.put('/integrations/sheets/sync-settings', { syncIntervalMinutes });
+      setConfig(data);
+    } catch (err) {
+      setSyncMessage({ ok: false, text: err.response?.data?.error || 'Não foi possível alterar a frequência.' });
+    } finally {
+      setIntervalSaving(false);
+    }
+  }
+
+  async function handleSyncNow() {
+    setSyncing(true);
+    setSyncMessage(null);
+    try {
+      const { data } = await api.post('/students/sync');
+      setSyncMessage({ ok: true, text: data.detail });
+    } catch (err) {
+      setSyncMessage({
+        ok: false,
+        text: err.response?.data?.detail || err.response?.data?.error || 'Falha ao sincronizar.',
+      });
+    } finally {
+      setSyncing(false);
+      loadRuns();
     }
   }
 
@@ -282,6 +360,80 @@ export default function Integracao() {
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {!loading && (
+        <div className="card int-sync">
+          <div className="int-sync-head">
+            <div>
+              <h3>Sincronização</h3>
+              <p className="opp-hint">
+                Os dados da planilha são copiados para o Painel Escolar automaticamente, na frequência escolhida.
+              </p>
+            </div>
+            <div className="int-sync-actions">
+              <select
+                className="input"
+                value={config?.syncIntervalMinutes ?? 60}
+                onChange={handleIntervalChange}
+                disabled={!isAdmin || intervalSaving}
+                aria-label="Frequência da sincronização automática"
+              >
+                {(config?.syncIntervalOptions || [0, 15, 30, 60, 360, 1440]).map((minutes) => (
+                  <option key={minutes} value={minutes}>
+                    {INTERVAL_LABELS[minutes] || `A cada ${minutes} minutos`}
+                  </option>
+                ))}
+              </select>
+              {isAdmin && (
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={handleSyncNow}
+                  disabled={syncing || !config?.configured}
+                >
+                  {syncing ? 'Sincronizando…' : 'Sincronizar agora'}
+                </button>
+              )}
+            </div>
+          </div>
+
+          {syncMessage && <p className={syncMessage.ok ? 'int-success' : 'field error'}>{syncMessage.text}</p>}
+
+          {runs.length === 0 ? (
+            <p className="opp-hint">Nenhuma sincronização registrada ainda.</p>
+          ) : (
+            <div className="table-scroll">
+              <table className="opp-table">
+                <thead>
+                  <tr>
+                    <th>Data</th>
+                    <th>Status</th>
+                    <th>Origem</th>
+                    <th>Detalhe</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {runs.map((run) => {
+                    const style = RUN_STYLE[run.status];
+                    return (
+                      <tr key={run.id}>
+                        <td>{formatDateTime(run.createdAt)}</td>
+                        <td>
+                          <span className="badge" style={{ background: style.bg, color: style.fg }}>
+                            {style.label}
+                          </span>
+                        </td>
+                        <td>{run.trigger === 'manual' ? 'Manual' : 'Automática'}</td>
+                        <td className="int-run-detail">{run.detail}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
     </Layout>

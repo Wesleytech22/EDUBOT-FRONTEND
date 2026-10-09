@@ -10,6 +10,7 @@ import Metricas from './pages/Metricas.jsx';
 import SobreNos from './pages/SobreNos.jsx';
 import Atendimento from './pages/Atendimento.jsx';
 import Integracao from './pages/Integracao.jsx';
+import PainelEscolar from './pages/PainelEscolar.jsx';
 import PrivateRoute from './components/PrivateRoute.jsx';
 
 export default function App() {
@@ -83,6 +84,15 @@ export default function App() {
       />
 
       <Route
+        path="/painel-escolar"
+        element={
+          <PrivateRoute>
+            <PainelEscolar />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
         path="/integracao"
         element={
           <PrivateRoute>
@@ -100,7 +110,6 @@ export default function App() {
         }
       />
 
-      {/* Painel Escolar ainda não liberado (Sprint 05) */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
