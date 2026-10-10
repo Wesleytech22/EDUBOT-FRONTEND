@@ -7,6 +7,12 @@
   align-items: start;
 }
 
+/* Sem min-width: 0, o conteúdo largo (a tabela da prévia) estica o cartão
+   além da coluna do grid em vez de rolar dentro dele. */
+.int-grid > .card {
+  min-width: 0;
+}
+
 .int-grid h3 {
   margin: 0 0 2px;
 }
@@ -55,6 +61,13 @@
   margin-top: 16px;
 }
 
+.int-preview-scroll {
+  max-height: 360px;
+  overflow: auto;
+  border: 1px solid var(--bd);
+  border-radius: var(--radius-sm);
+}
+
 .int-table {
   width: 100%;
   border-collapse: collapse;
@@ -66,11 +79,18 @@
   border-bottom: 1px solid var(--bd);
   color: var(--t600);
   white-space: nowrap;
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* Primeira linha (normalmente o cabeçalho da planilha) fixa ao rolar. */
 .int-table tr:first-child td {
   color: var(--t900);
   font-weight: 500;
+  position: sticky;
+  top: 0;
+  background: var(--alt);
 }
 
 @media (max-width: 900px) {

@@ -262,7 +262,9 @@ export default function Integracao() {
                         ? `Mostrando as ${preview.values.length} primeiras de ${preview.totalRows} linhas.`
                         : `${preview.totalRows} linha(s) lida(s).`}
                     </p>
-                    <div className="table-scroll">
+                    {/* Rolagem própria (horizontal e vertical): planilhas com muitas
+                        colunas ou textos longos não podem esticar a tela. */}
+                    <div className="int-preview-scroll">
                       <table className="int-table">
                         <tbody>
                           {preview.values.map((row, i) => (
@@ -270,7 +272,9 @@ export default function Integracao() {
                             <tr key={i}>
                               {row.map((cell, j) => (
                                 // eslint-disable-next-line react/no-array-index-key
-                                <td key={j}>{cell}</td>
+                                <td key={j} title={cell}>
+                                  {cell}
+                                </td>
                               ))}
                             </tr>
                           ))}
