@@ -9,12 +9,14 @@ const INACTIVITY_TIMEOUT_MS = (Number(import.meta.env.VITE_INACTIVITY_TIMEOUT_MI
 const ACTIVITY_EVENTS = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart'];
 
 // Multi-escola — escola aberta pelo Administrador da plataforma. A API lê o
-// mesmo valor (services/api.js) para mandar o cabeçalho X-School-Id.
+// mesmo valor (services/api.js) para mandar o cabeçalho X-School-Id. Fica no
+// sessionStorage (por aba): duas abas podem ter escolas diferentes abertas sem
+// uma trocar os dados da outra.
 export const SCHOOL_STORAGE_KEY = 'edubot_school';
 
 function readStoredSchool() {
   try {
-    const stored = localStorage.getItem(SCHOOL_STORAGE_KEY);
+    const stored = sessionStorage.getItem(SCHOOL_STORAGE_KEY);
     return stored ? JSON.parse(stored) : null;
   } catch {
     return null;
@@ -42,7 +44,7 @@ export function AuthProvider({ children }) {
     try {
       const { data } = await api.post('/auth/login', { email, password });
       localStorage.setItem('edubot_token', data.token);
-      localStorage.removeItem(SCHOOL_STORAGE_KEY);
+      sessionStorage.removeItem(SCHOOL_STORAGE_KEY);
       setPlatformSchool(null);
       setUser(data.user);
       return data.user;
@@ -53,7 +55,7 @@ export function AuthProvider({ children }) {
 
   const logout = useCallback((reason) => {
     localStorage.removeItem('edubot_token');
-    localStorage.removeItem(SCHOOL_STORAGE_KEY);
+    sessionStorage.removeItem(SCHOOL_STORAGE_KEY);
     if (reason) {
       localStorage.setItem('edubot_logout_reason', reason);
     }
@@ -64,13 +66,27 @@ export function AuthProvider({ children }) {
   // Administrador da plataforma: abre (ou fecha) o painel de uma escola.
   const selectSchool = useCallback((school) => {
     const value = { id: school.id, name: school.name };
-    localStorage.setItem(SCHOOL_STORAGE_KEY, JSON.stringify(value));
+    sessionStorage.setItem(SCHOOL_STORAGE_KEY, JSON.stringify(value));
     setPlatformSchool(value);
   }, []);
 
   const leaveSchool = useCallback(() => {
-    localStorage.removeItem(SCHOOL_STORAGE_KEY);
+    sessionStorage.removeItem(SCHOOL_STORAGE_KEY);
     setPlatformSchool(null);
+  }, []);
+
+  // O login (token) é do navegador inteiro (localStorage). Se outra aba entra
+  // com outra conta — de outra escola — ou sai, esta aba recarrega: a tela
+  // nunca pode mostrar uma escola enquanto as chamadas já vão com o login de
+  // outra.
+  useEffect(() => {
+    function handleStorage(e) {
+      if (e.storageArea !== localStorage || !['edubot_token', 'edubot_user'].includes(e.key)) return;
+      if (e.oldValue === e.newValue) return;
+      window.location.reload();
+    }
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
   }, []);
 
   const logoutRef = useRef(logout);
