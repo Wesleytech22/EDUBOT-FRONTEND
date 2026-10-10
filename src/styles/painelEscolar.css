@@ -33,7 +33,7 @@
 
 .pe-summary {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 20px;
 }
 
@@ -207,4 +207,21 @@
   .pe-pagination-page {
     text-align: center;
   }
+}
+
+.pe-bonus {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.pe-bonus-badge {
+  background: var(--a100);
+  color: var(--a600);
+}
+
+.pe-bonus-none {
+  color: var(--t400);
+  font-size: 13px;
 }
