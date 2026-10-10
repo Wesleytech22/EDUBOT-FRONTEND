@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '../components/Layout.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import api from '../services/api.js';
+import { SYNC_POLL_MS, describeNextSync } from '../services/syncSchedule.js';
 import '../styles/oportunidades.css';
 import '../styles/painelEscolar.css';
 
@@ -87,6 +88,28 @@ export default function PainelEscolar() {
   useEffect(() => {
     loadSideData();
   }, [loadSideData]);
+
+  // A sincronização automática acontece no servidor: a tela confere o status
+  // a cada 30 s e, quando aparece uma sincronização nova, recarrega os dados
+  // — sem precisar atualizar a página.
+  const lastRunRef = useRef(null);
+  useEffect(() => {
+    lastRunRef.current = syncStatus?.lastRun?.createdAt || null;
+  }, [syncStatus]);
+
+  useEffect(() => {
+    const timer = setInterval(async () => {
+      try {
+        const { data } = await api.get('/students/sync-status');
+        const changed = (data.lastRun?.createdAt || null) !== lastRunRef.current;
+        setSyncStatus(data);
+        if (changed) await Promise.all([load(), loadSideData()]);
+      } catch {
+        // tenta de novo no próximo ciclo
+      }
+    }, SYNC_POLL_MS);
+    return () => clearInterval(timer);
+  }, [load, loadSideData]);
 
   async function handleSync() {
     setSyncing(true);
@@ -185,6 +208,7 @@ export default function PainelEscolar() {
             </p>
           )}
           {syncMessage && <p className={syncMessage.ok ? 'pe-sync-ok' : 'pe-sync-fail'}>{syncMessage.text}</p>}
+          {describeNextSync(syncStatus) && <p className="pe-sync-next">{describeNextSync(syncStatus)}</p>}
           {isAdmin && !notConfigured && (
             <button type="button" className="btn btn-secondary" onClick={handleSync} disabled={syncing}>
               {syncing ? 'Sincronizando…' : 'Sincronizar agora'}
