@@ -112,6 +112,41 @@
   margin-bottom: 12px;
 }
 
+.pe-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.pe-pagination-info,
+.pe-pagination-page {
+  font-size: 13px;
+  color: var(--t600);
+}
+
+.pe-pagination-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pe-page-size {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--t600);
+}
+
+.pe-page-size select {
+  width: auto;
+  padding: 8px 10px;
+}
+
 .pe-footer {
   margin: 16px 0 0;
   font-size: 12px;
@@ -138,5 +173,15 @@
   .pe-filters > .input {
     flex: none;
     width: 100%;
+  }
+
+  .pe-pagination,
+  .pe-pagination-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pe-pagination-page {
+    text-align: center;
   }
 }
