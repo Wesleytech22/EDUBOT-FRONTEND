@@ -45,7 +45,7 @@
 
 /* Cartões calculados sobre um filtro ganham o tom da marca, para não serem
    confundidos com os números da escola inteira. */
-.pe-kpi-filtered {
+.card.pe-kpi-filtered {
   border-color: var(--b600);
   background: var(--b100);
 }
