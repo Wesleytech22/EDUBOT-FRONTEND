@@ -62,6 +62,28 @@
   margin-top: 16px;
 }
 
+.int-preview-empty {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 16px;
+  padding: 20px;
+  border: 1px dashed var(--bd);
+  border-radius: var(--radius-sm);
+  background: var(--alt);
+  text-align: center;
+}
+
+.int-preview-empty strong {
+  font-size: 14px;
+  color: var(--t900);
+}
+
+.int-preview-empty span {
+  font-size: 13px;
+  color: var(--t600);
+}
+
 .int-preview-scroll {
   max-height: 360px;
   overflow: auto;
