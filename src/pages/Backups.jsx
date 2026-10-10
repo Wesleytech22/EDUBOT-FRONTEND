@@ -78,6 +78,9 @@ export default function Backups() {
 
   const lastRun = data.history[0];
   const lastFailed = lastRun?.status === 'falha';
+  // Versões antigas da API não informam o armazenamento: tratadas como disco.
+  const storage = data.storage || { persistent: false };
+  const maxAgeHours = data.schedule.maxAgeHours || 24;
 
   return (
     <Layout title="Segurança · Backups">
@@ -91,6 +94,16 @@ export default function Backups() {
         </div>
       )}
 
+      {storage.error && <div className="bk-alert">{storage.error}</div>}
+
+      {!storage.persistent && (
+        <div className="bk-warning">
+          <strong>Backups em disco temporário.</strong> Neste servidor os arquivos ficam no disco do próprio
+          servidor, que é apagado quando ele reinicia. Configure o banco de backups (BACKUP_STORAGE_URL) para
+          guardá-los de forma permanente.
+        </div>
+      )}
+
       <div className="bk-cards">
         <div className="card bk-card">
           <span>Último backup bem-sucedido</span>
@@ -100,7 +113,20 @@ export default function Backups() {
         <div className="card bk-card">
           <span>Próximo backup automático</span>
           <strong>{data.schedule.enabled ? formatDateTime(data.schedule.nextRunAt) : 'Desativado'}</strong>
-          <small>{data.schedule.enabled ? 'Rotina diária no servidor' : 'Rotina agendada desligada no servidor'}</small>
+          <small>
+            {data.schedule.enabled
+              ? `Diário — e no primeiro uso, se o último tiver mais de ${maxAgeHours} h`
+              : 'Rotina agendada desligada no servidor'}
+          </small>
+        </div>
+        <div className={`card bk-card${storage.persistent ? '' : ' bk-card-warn'}`}>
+          <span>Onde ficam os backups</span>
+          <strong>{storage.persistent ? 'Banco de backups' : 'Disco do servidor'}</strong>
+          <small>
+            {storage.persistent
+              ? `Permanente · ${storage.storedCount ?? '—'} guardado(s) · ambiente ${storage.environment}`
+              : 'Temporário — some quando o servidor reinicia'}
+          </small>
         </div>
         <div className="card bk-card">
           <span>Retenção</span>
@@ -152,9 +178,9 @@ export default function Backups() {
                       <td className="bk-detail">
                         {run.status === 'falha'
                           ? run.detail
-                          : run.removedCount > 0
-                            ? `${run.removedCount} backup(s) antigo(s) removido(s) pela retenção`
-                            : '—'}
+                          : [run.detail, run.removedCount > 0 ? `${run.removedCount} antigo(s) removido(s) pela retenção` : null]
+                              .filter(Boolean)
+                              .join(' · ') || '—'}
                       </td>
                     </tr>
                   );
