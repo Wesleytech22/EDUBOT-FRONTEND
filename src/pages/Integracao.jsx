@@ -284,8 +284,11 @@ export default function Integracao() {
                     required
                   />
                   <span className="hint">
-                    Colunas na ordem Nome, Série, Presenças, Faltas e Situação. Ex.: Alunos!A:E (a linha de
-                    cabeçalho é reconhecida automaticamente).
+                    Colunas na ordem Nome, Série, Presenças, Faltas e Contato (telefone do aluno, opcional).
+                    Ex.: Alunos!A:E (a linha de cabeçalho é reconhecida automaticamente). A frequência e a
+                    situação do aluno (Regular a partir de 85%, Atenção de 75% a 84,9%, Risco abaixo de 75%) são
+                    calculadas pelo sistema. Quando o aluno entra no bot do Telegram com esse telefone, ele passa a
+                    ganhar pontos de bonificação no Painel Escolar.
                   </span>
                 </div>
 

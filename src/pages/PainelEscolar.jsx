@@ -8,6 +8,7 @@ import '../styles/oportunidades.css';
 import '../styles/painelEscolar.css';
 
 const SITUATION_OPTIONS = ['Todas', 'Regular', 'Atenção', 'Risco'];
+const ENGAGEMENT_OPTIONS = ['Todos', 'Engajados', 'Não engajados'];
 const PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
 const SITUATION_STYLE = {
   Regular: { bg: 'var(--g100)', fg: 'var(--g600)' },
@@ -24,6 +25,28 @@ function formatPercent(value) {
   return `${Number(value).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%`;
 }
 
+// Bonificação do aluno que entrou no bot do Telegram com o telefone do
+// Contato da planilha: pontos por vincular e por cada mensagem enviada.
+function BonusCell({ student }) {
+  const { bonus, contactPhone } = student;
+  if (bonus.points > 0) {
+    const detail = [
+      bonus.telegramLinked ? 'Telegram vinculado' : null,
+      `${bonus.interactions} interação(ões)`,
+      bonus.lastInteractionAt ? `última em ${formatDateTime(bonus.lastInteractionAt)}` : null,
+    ]
+      .filter(Boolean)
+      .join(' · ');
+    return (
+      <span className="pe-bonus" title={detail}>
+        <span className="badge pe-bonus-badge">⭐ Engajado</span>
+        <strong>{bonus.points} pts</strong>
+      </span>
+    );
+  }
+  return <span className="pe-bonus-none">{contactPhone ? 'Aguardando Telegram' : 'Sem contato'}</span>;
+}
+
 // Tela 07 — Painel Escolar: a restrição do produto aparece antes dos dados —
 // a plataforma lê a planilha da escola, nunca escreve nela. Busca e filtros
 // sobre os dados sincronizados, exportação em CSV e o carimbo da última
@@ -37,6 +60,7 @@ export default function PainelEscolar() {
   const [search, setSearch] = useState('');
   const [grade, setGrade] = useState('Todas');
   const [situation, setSituation] = useState('Todas');
+  const [engagement, setEngagement] = useState('Todos');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [page, setPage] = useState(1);
@@ -54,8 +78,9 @@ export default function PainelEscolar() {
     if (search.trim()) params.search = search.trim();
     if (grade !== 'Todas') params.grade = grade;
     if (situation !== 'Todas') params.situation = situation;
+    if (engagement !== 'Todos') params.engagement = engagement;
     return params;
-  }, [search, grade, situation]);
+  }, [search, grade, situation, engagement]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -83,7 +108,7 @@ export default function PainelEscolar() {
   // Filtro ou tamanho de página novos sempre recomeçam da primeira página.
   useEffect(() => {
     setPage(1);
-  }, [search, grade, situation, pageSize]);
+  }, [search, grade, situation, engagement, pageSize]);
 
   const loadSideData = useCallback(async () => {
     try {
@@ -208,6 +233,15 @@ export default function PainelEscolar() {
               </small>
             )}
           </div>
+          <div className={`card pe-kpi${filtered ? ' pe-kpi-filtered' : ''}`}>
+            <strong>{hasStudents ? summary.bonus.engaged : '—'}</strong>
+            <span>Engajados no Telegram</span>
+            {hasStudents && (
+              <small>
+                {summary.bonus.points} pts · {summary.bonus.withContact} com contato
+              </small>
+            )}
+          </div>
         </div>
 
         <div className="card pe-sync">
@@ -263,13 +297,29 @@ export default function PainelEscolar() {
             </option>
           ))}
         </select>
+        <select
+          className="input"
+          value={engagement}
+          onChange={(e) => setEngagement(e.target.value)}
+          aria-label="Bonificação"
+        >
+          {ENGAGEMENT_OPTIONS.map((o) => (
+            <option key={o} value={o}>
+              Bonificação: {o}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="card">
         <div className="pe-list-head">
           <div>
             <h3>Alunos</h3>
-            <p className="opp-hint">A frequência é calculada a partir das presenças e faltas registradas na planilha.</p>
+            <p className="opp-hint">
+              Frequência e situação são calculadas a partir das presenças e faltas da planilha. A bonificação
+              soma 10 pts quando o aluno entra no bot do Telegram com o Contato da planilha e 5 pts por
+              mensagem enviada.
+            </p>
           </div>
           <button
             type="button"
@@ -299,6 +349,7 @@ export default function PainelEscolar() {
                   <th>Faltas</th>
                   <th>Frequência</th>
                   <th>Situação</th>
+                  <th>Bonificação</th>
                 </tr>
               </thead>
               <tbody>
@@ -315,6 +366,9 @@ export default function PainelEscolar() {
                         <span className="badge" style={{ background: style.bg, color: style.fg }}>
                           {s.situation}
                         </span>
+                      </td>
+                      <td>
+                        <BonusCell student={s} />
                       </td>
                     </tr>
                   );
