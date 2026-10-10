@@ -66,6 +66,41 @@
   margin-top: 16px;
 }
 
+/* O cartão da prévia acompanha a altura do ao lado: a mensagem inicial
+   ocupa o espaço que sobra, centralizada. */
+.int-preview {
+  display: flex;
+  flex-direction: column;
+}
+
+.int-preview > .btn {
+  align-self: flex-start;
+}
+
+.int-preview-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 16px;
+  padding: 20px;
+  border: 1px dashed var(--bd);
+  border-radius: var(--radius-sm);
+  background: var(--alt);
+  text-align: center;
+}
+
+.int-preview-empty strong {
+  font-size: 14px;
+  color: var(--t900);
+}
+
+.int-preview-empty span {
+  font-size: 13px;
+  color: var(--t600);
+}
+
 .int-preview-scroll {
   max-height: 360px;
   overflow: auto;
