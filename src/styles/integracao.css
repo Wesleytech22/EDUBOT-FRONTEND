@@ -4,7 +4,8 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 20px;
-  align-items: start;
+  /* "Origem dos dados" e "Prévia de leitura" com a mesma altura, lado a lado. */
+  align-items: stretch;
 }
 
 /* Sem min-width: 0, o conteúdo largo (a tabela da prévia) estica o cartão
