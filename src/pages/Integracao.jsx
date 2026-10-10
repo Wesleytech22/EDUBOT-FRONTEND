@@ -284,8 +284,9 @@ export default function Integracao() {
                     required
                   />
                   <span className="hint">
-                    Colunas na ordem Nome, Série, Presenças, Faltas e Situação. Ex.: Alunos!A:E (a linha de
-                    cabeçalho é reconhecida automaticamente).
+                    Colunas na ordem Nome, Série, Presenças e Faltas. Ex.: Alunos!A:D (a linha de
+                    cabeçalho é reconhecida automaticamente). A frequência e a situação do aluno
+                    (Regular a partir de 85%, Atenção de 75% a 84,9%, Risco abaixo de 75%) são calculadas pelo sistema.
                   </span>
                 </div>
 
