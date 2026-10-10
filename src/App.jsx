@@ -9,6 +9,7 @@ import ResultadoDisparo from './pages/ResultadoDisparo.jsx';
 import Metricas from './pages/Metricas.jsx';
 import SobreNos from './pages/SobreNos.jsx';
 import Atendimento from './pages/Atendimento.jsx';
+import Backups from './pages/Backups.jsx';
 import PrivateRoute from './components/PrivateRoute.jsx';
 
 export default function App() {
@@ -77,6 +78,15 @@ export default function App() {
         element={
           <PrivateRoute>
             <Atendimento />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/backups"
+        element={
+          <PrivateRoute roles={['administrador']}>
+            <Backups />
           </PrivateRoute>
         }
       />
