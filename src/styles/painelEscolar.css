@@ -43,6 +43,13 @@
   gap: 6px;
 }
 
+/* Cartões calculados sobre um filtro ganham o tom da marca, para não serem
+   confundidos com os números da escola inteira. */
+.pe-kpi-filtered {
+  border-color: var(--b600);
+  background: var(--b100);
+}
+
 .pe-kpi strong {
   font-size: 30px;
 }

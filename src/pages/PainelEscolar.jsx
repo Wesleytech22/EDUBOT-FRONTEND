@@ -61,7 +61,13 @@ export default function PainelEscolar() {
     setLoading(true);
     setError('');
     try {
-      const { data } = await api.get('/students', { params: { ...filterParams(), page, pageSize } });
+      // Lista e cartões usam os mesmos filtros: os indicadores mostram sempre o
+      // recorte que está na tela.
+      const [{ data }, { data: summaryData }] = await Promise.all([
+        api.get('/students', { params: { ...filterParams(), page, pageSize } }),
+        api.get('/students/summary', { params: filterParams() }),
+      ]);
+      setSummary(summaryData);
       setItems(data.items);
       setGrades(data.grades);
       setPagination({ total: data.total, totalPages: data.totalPages || 1 });
@@ -81,11 +87,7 @@ export default function PainelEscolar() {
 
   const loadSideData = useCallback(async () => {
     try {
-      const [{ data: summaryData }, { data: statusData }] = await Promise.all([
-        api.get('/students/summary'),
-        api.get('/students/sync-status'),
-      ]);
-      setSummary(summaryData);
+      const { data: statusData } = await api.get('/students/sync-status');
       setSyncStatus(statusData);
     } catch {
       // os indicadores são complementares — não bloqueiam a listagem
@@ -158,6 +160,8 @@ export default function PainelEscolar() {
   }
 
   const notConfigured = syncStatus && !syncStatus.configured;
+  const filtered = Boolean(summary?.filtered);
+  const hasStudents = Boolean(summary && summary.totalStudents > 0);
   const lastRunFailed = syncStatus?.lastRun?.status === 'falha';
 
   return (
@@ -185,16 +189,18 @@ export default function PainelEscolar() {
 
       <div className="pe-top">
         <div className="pe-summary">
-          <div className="card pe-kpi">
+          <div className={`card pe-kpi${filtered ? ' pe-kpi-filtered' : ''}`}>
             <strong>{summary ? summary.totalStudents : '—'}</strong>
-            <span>Alunos na base</span>
+            <span>{filtered ? 'Alunos no filtro' : 'Alunos na base'}</span>
+            {filtered && <small>de {summary.baseTotal} na base</small>}
           </div>
-          <div className="card pe-kpi">
-            <strong>{summary ? formatPercent(summary.averageAttendance) : '—'}</strong>
+          <div className={`card pe-kpi${filtered ? ' pe-kpi-filtered' : ''}`}>
+            <strong>{hasStudents ? formatPercent(summary.averageAttendance) : '—'}</strong>
             <span>Frequência média</span>
+            {filtered && <small>dos alunos no filtro</small>}
           </div>
-          <div className="card pe-kpi">
-            <strong>{summary ? `${summary.regularRate}%` : '—'}</strong>
+          <div className={`card pe-kpi${filtered ? ' pe-kpi-filtered' : ''}`}>
+            <strong>{hasStudents ? `${summary.regularRate}%` : '—'}</strong>
             <span>Em situação regular</span>
             {summary && summary.totalStudents > 0 && (
               <small>
