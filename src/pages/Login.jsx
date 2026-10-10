@@ -105,8 +105,9 @@ export default function Login() {
     setError('');
     setResetSuccess(false);
     try {
-      await login(email, password);
-      navigate('/', { replace: true });
+      const loggedUser = await login(email, password);
+      // O Administrador da plataforma começa pela lista de escolas.
+      navigate(loggedUser?.role === 'super_admin' ? '/escolas' : '/', { replace: true });
     } catch (err) {
       setError(err.response?.data?.error || 'Não foi possível entrar. Tente novamente.');
     }

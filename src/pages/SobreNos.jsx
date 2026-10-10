@@ -15,8 +15,8 @@ function initials(name) {
 }
 
 export default function SobreNos() {
-  const { user } = useAuth();
-  const isAdmin = user?.role === 'administrador';
+  // Inclui o Administrador da plataforma dentro da escola que ele abriu.
+  const { isAdmin } = useAuth();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

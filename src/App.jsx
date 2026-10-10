@@ -10,6 +10,9 @@ import Metricas from './pages/Metricas.jsx';
 import SobreNos from './pages/SobreNos.jsx';
 import Atendimento from './pages/Atendimento.jsx';
 import Backups from './pages/Backups.jsx';
+import Integracao from './pages/Integracao.jsx';
+import PainelEscolar from './pages/PainelEscolar.jsx';
+import Escolas from './pages/Escolas.jsx';
 import PrivateRoute from './components/PrivateRoute.jsx';
 
 export default function App() {
@@ -85,8 +88,35 @@ export default function App() {
       <Route
         path="/backups"
         element={
-          <PrivateRoute roles={['administrador']}>
+          <PrivateRoute roles={['super_admin']} needsSchool={false}>
             <Backups />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/painel-escolar"
+        element={
+          <PrivateRoute>
+            <PainelEscolar />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/integracao"
+        element={
+          <PrivateRoute>
+            <Integracao />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/escolas"
+        element={
+          <PrivateRoute roles={['super_admin']} needsSchool={false}>
+            <Escolas />
           </PrivateRoute>
         }
       />
@@ -94,13 +124,12 @@ export default function App() {
       <Route
         path="/sobre"
         element={
-          <PrivateRoute>
+          <PrivateRoute needsSchool={false}>
             <SobreNos />
           </PrivateRoute>
         }
       />
 
-      {/* Painel Escolar e Integração ficam para as Sprints 05/06 */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

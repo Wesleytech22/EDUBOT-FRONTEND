@@ -10,14 +10,17 @@ function formatDateTime(value) {
 }
 
 // Dashboard com dados reais do módulo de Oportunidades (RF-01 a RF-03) e do
-// status de entrega por contato do broadcast (RF-06, Sprint 03). Engajamento
-// no FAQ e o Painel Escolar dependem dos módulos C (chatbot) e F/H (Google
-// Sheets), ainda não implementados — por isso aparecem como "ainda sem
-// dados", em vez de números fictícios.
+// status de entrega por contato do broadcast (RF-06, Sprint 03). O card do
+// Painel Escolar resume os dados sincronizados da planilha da escola
+// (Sprint 05) — sem planilha conectada, mostra "ainda sem dados" em vez de
+// números fictícios.
 export default function Dashboard() {
   const [items, setItems] = useState(null);
   const [deliveryByOpp, setDeliveryByOpp] = useState(new Map());
   const [error, setError] = useState('');
+  const [school, setSchool] = useState(null);
+  const [schoolInfo, setSchoolInfo] = useState(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -40,6 +43,18 @@ export default function Dashboard() {
         }
         setDeliveryByOpp(delivery);
         setItems(data.items);
+
+        // Complementar, como o status de entrega: sem o backend da Sprint 05
+        // o card do Painel Escolar só fica sem dados.
+        Promise.all([api.get('/students/summary'), api.get('/students/sync-status')])
+          .then(([summary, status]) => setSchool({ ...summary.data, ...status.data }))
+          .catch(() => setSchool(null));
+
+        // Link de entrada no chatbot desta escola, para a coordenação divulgar.
+        api
+          .get('/schools/current')
+          .then((r) => setSchoolInfo(r.data))
+          .catch(() => setSchoolInfo(null));
       } catch (err) {
         setError(err.response?.data?.error || 'Não foi possível carregar o dashboard.');
       }
@@ -83,8 +98,35 @@ export default function Dashboard() {
     .sort((a, b) => new Date(b.dispatchedAt) - new Date(a.dispatchedAt))
     .slice(0, 5);
 
+  async function copyChatbotLink() {
+    try {
+      await navigator.clipboard.writeText(schoolInfo.telegramLink);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      window.prompt('Copie o link do chatbot:', schoolInfo.telegramLink);
+    }
+  }
+
   return (
     <Layout title="Dashboard">
+      {schoolInfo?.telegramLink && (
+        <div className="card dash-chatbot-link">
+          <div>
+            <strong>Link do chatbot da escola</strong>
+            <span>Divulgue para alunos e famílias se inscreverem pelo Telegram.</span>
+          </div>
+          <div className="dash-chatbot-actions">
+            <a href={schoolInfo.telegramLink} target="_blank" rel="noreferrer">
+              {schoolInfo.telegramLink}
+            </a>
+            <button type="button" className="btn btn-secondary" onClick={copyChatbotLink}>
+              {copied ? 'Copiado!' : 'Copiar link'}
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="dash-kpis">
         {kpis.map((kpi) => (
           <div className="card dash-kpi" key={kpi.label}>
@@ -121,7 +163,32 @@ export default function Dashboard() {
         <div className="card">
           <h3>Painel escolar</h3>
           <p className="dash-hint">Dados lidos do Google Sheets</p>
-          <p className="opp-hint">Ainda sem dados — a integração com o Google Sheets chega na Sprint 05.</p>
+          {school && school.totalStudents > 0 ? (
+            <>
+              <div className="dash-school">
+                <div>
+                  <strong>{school.totalStudents}</strong>
+                  <span>Alunos</span>
+                </div>
+                <div>
+                  <strong>{Number(school.averageAttendance).toLocaleString('pt-BR')}%</strong>
+                  <span>Frequência média</span>
+                </div>
+                <div>
+                  <strong>{school.bySituation.Risco}</strong>
+                  <span>Em risco</span>
+                </div>
+              </div>
+              <p className="dash-hint">
+                Sincronizado em {formatDateTime(school.lastSuccessfulSyncAt)} ·{' '}
+                <Link to="/painel-escolar">Abrir Painel Escolar</Link>
+              </p>
+            </>
+          ) : (
+            <p className="opp-hint">
+              Ainda sem dados — conecte a planilha da escola em <Link to="/integracao">Integração</Link>.
+            </p>
+          )}
         </div>
       </div>
 
