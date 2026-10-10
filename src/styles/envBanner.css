@@ -1,0 +1,32 @@
+@import './tokens.css';
+
+.env-banner {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  padding: 6px 16px;
+  font-size: 12px;
+  text-align: center;
+}
+
+.env-banner strong {
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.env-banner-dev {
+  background: var(--a100);
+  color: var(--a600);
+  border-bottom: 1px solid var(--a600);
+}
+
+.env-banner-qa {
+  background: var(--b100);
+  color: var(--b700);
+  border-bottom: 1px solid var(--b600);
+}
