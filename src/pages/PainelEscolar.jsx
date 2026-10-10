@@ -8,6 +8,7 @@ import '../styles/oportunidades.css';
 import '../styles/painelEscolar.css';
 
 const SITUATION_OPTIONS = ['Todas', 'Regular', 'Atenção', 'Risco'];
+const PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
 const SITUATION_STYLE = {
   Regular: { bg: 'var(--g100)', fg: 'var(--g600)' },
   Atenção: { bg: 'var(--a100)', fg: 'var(--a600)' },
@@ -38,6 +39,9 @@ export default function PainelEscolar() {
   const [situation, setSituation] = useState('Todas');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+  const [pagination, setPagination] = useState({ total: 0, totalPages: 1 });
 
   const [summary, setSummary] = useState(null);
   const [syncStatus, setSyncStatus] = useState(null);
@@ -57,15 +61,23 @@ export default function PainelEscolar() {
     setLoading(true);
     setError('');
     try {
-      const { data } = await api.get('/students', { params: filterParams() });
+      const { data } = await api.get('/students', { params: { ...filterParams(), page, pageSize } });
       setItems(data.items);
       setGrades(data.grades);
+      setPagination({ total: data.total, totalPages: data.totalPages || 1 });
+      // O servidor devolve a última página válida quando a pedida não existe mais.
+      if (data.page && data.page !== page) setPage(data.page);
     } catch (err) {
       setError(err.response?.data?.error || 'Não foi possível carregar os dados escolares.');
     } finally {
       setLoading(false);
     }
-  }, [filterParams]);
+  }, [filterParams, page, pageSize]);
+
+  // Filtro ou tamanho de página novos sempre recomeçam da primeira página.
+  useEffect(() => {
+    setPage(1);
+  }, [search, grade, situation, pageSize]);
 
   const loadSideData = useCallback(async () => {
     try {
@@ -303,6 +315,46 @@ export default function PainelEscolar() {
                 })}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {!loading && pagination.total > 0 && (
+          <div className="pe-pagination">
+            <span className="pe-pagination-info">
+              Mostrando {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, pagination.total)} de{' '}
+              {pagination.total} aluno(s)
+            </span>
+            <div className="pe-pagination-controls">
+              <label className="pe-page-size">
+                Por página
+                <select className="input" value={pageSize} onChange={(e) => setPageSize(Number(e.target.value))}>
+                  {PAGE_SIZE_OPTIONS.map((size) => (
+                    <option key={size} value={size}>
+                      {size}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setPage((p) => p - 1)}
+                disabled={page <= 1}
+              >
+                Anterior
+              </button>
+              <span className="pe-pagination-page">
+                Página {page} de {pagination.totalPages}
+              </span>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setPage((p) => p + 1)}
+                disabled={page >= pagination.totalPages}
+              >
+                Próxima
+              </button>
+            </div>
           </div>
         )}
 
