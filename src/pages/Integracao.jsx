@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Layout from '../components/Layout.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import api from '../services/api.js';
+import { SYNC_POLL_MS, describeNextSync } from '../services/syncSchedule.js';
 import '../styles/oportunidades.css';
 import '../styles/integracao.css';
 
@@ -57,6 +58,7 @@ export default function Integracao() {
   const [saveSuccess, setSaveSuccess] = useState('');
 
   const [runs, setRuns] = useState([]);
+  const [syncStatus, setSyncStatus] = useState(null);
   const [syncing, setSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState(null);
   const [intervalSaving, setIntervalSaving] = useState(false);
@@ -81,9 +83,26 @@ export default function Integracao() {
     }
   }, []);
 
+  const loadStatus = useCallback(async () => {
+    try {
+      const { data } = await api.get('/students/sync-status');
+      setSyncStatus(data);
+    } catch {
+      // complementar, como o histórico
+    }
+  }, []);
+
+  // A rotina automática roda no servidor: histórico e próximo horário são
+  // conferidos a cada 30 s, sem precisar atualizar a página.
   useEffect(() => {
     loadRuns();
-  }, [loadRuns]);
+    loadStatus();
+    const timer = setInterval(() => {
+      loadRuns();
+      loadStatus();
+    }, SYNC_POLL_MS);
+    return () => clearInterval(timer);
+  }, [loadRuns, loadStatus]);
 
   useEffect(() => {
     (async () => {
@@ -116,6 +135,7 @@ export default function Integracao() {
       if (message.ok) setSaveSuccess(message.text);
       else setSaveError(message.text);
       loadRuns();
+      loadStatus();
     } catch (err) {
       setSaveError(err.response?.data?.error || 'Não foi possível salvar o link.');
     } finally {
@@ -143,6 +163,7 @@ export default function Integracao() {
       if (message.ok) setSaveSuccess(message.text);
       else setSaveError(message.text);
       loadRuns();
+      loadStatus();
       if (fileInputRef.current) fileInputRef.current.value = '';
     } catch (err) {
       setSaveError(err.response?.data?.error || 'Não foi possível enviar o arquivo.');
@@ -158,6 +179,7 @@ export default function Integracao() {
     try {
       const { data } = await api.put('/integrations/sheets/sync-settings', { syncIntervalMinutes });
       setConfig(data);
+      loadStatus();
     } catch (err) {
       setSyncMessage({ ok: false, text: err.response?.data?.error || 'Não foi possível alterar a frequência.' });
     } finally {
@@ -179,6 +201,7 @@ export default function Integracao() {
     } finally {
       setSyncing(false);
       loadRuns();
+      loadStatus();
     }
   }
 
@@ -371,6 +394,7 @@ export default function Integracao() {
               <p className="opp-hint">
                 Os dados da planilha são copiados para o Painel Escolar automaticamente, na frequência escolhida.
               </p>
+              {describeNextSync(syncStatus) && <p className="int-sync-next">{describeNextSync(syncStatus)}</p>}
             </div>
             <div className="int-sync-actions">
               <select

@@ -93,6 +93,13 @@
   margin: 0 0 2px;
 }
 
+.int-sync-next {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--b700);
+  margin: 6px 0 0;
+}
+
 .int-sync-actions {
   display: flex;
   gap: 12px;
