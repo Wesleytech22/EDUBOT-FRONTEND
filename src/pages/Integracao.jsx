@@ -352,6 +352,30 @@ export default function Integracao() {
 
             {previewError && <p className="field error int-preview-msg">{previewError}</p>}
 
+            {/* Antes da primeira leitura, o cartão (da mesma altura do ao lado)
+                explica para que serve a prévia, em vez de ficar vazio. */}
+            {!preview && !previewError && !previewLoading && (
+              <div className="int-preview-empty">
+                {config?.configured ? (
+                  <>
+                    <strong>Deseja ver como está a planilha antes de sincronizar?</strong>
+                    <span>
+                      Clique em "Ler planilha agora" para visualizar o que já foi preenchido. Nada é gravado na
+                      plataforma nesta prévia.
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <strong>Nenhuma planilha configurada ainda.</strong>
+                    <span>
+                      Cole o link ou anexe o arquivo CSV em "Origem dos dados" para visualizar aqui como a planilha
+                      está preenchida.
+                    </span>
+                  </>
+                )}
+              </div>
+            )}
+
             {preview && (
               <div className="int-preview-msg">
                 {preview.values.length === 0 ? (
