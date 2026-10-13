@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import PasswordInput from '../components/PasswordInput.jsx';
 import api from '../services/api.js';
 import '../styles/login.css';
 
@@ -64,10 +65,8 @@ export default function RedefinirSenha() {
 
           <div className="field">
             <label htmlFor="password">Nova senha</label>
-            <input
+            <PasswordInput
               id="password"
-              className="input"
-              type="password"
               placeholder="••••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -78,10 +77,8 @@ export default function RedefinirSenha() {
 
           <div className="field">
             <label htmlFor="confirmPassword">Confirmar nova senha</label>
-            <input
+            <PasswordInput
               id="confirmPassword"
-              className="input"
-              type="password"
               placeholder="••••••••••"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
