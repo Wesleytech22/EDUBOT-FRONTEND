@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout.jsx';
+import PasswordInput from '../components/PasswordInput.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import api from '../services/api.js';
 import '../styles/oportunidades.css';
@@ -132,9 +133,7 @@ function SchoolAccounts({ school }) {
           aria-label="E-mail da nova conta"
           required
         />
-        <input
-          className="input"
-          type="password"
+        <PasswordInput
           placeholder="Senha inicial (mín. 8)"
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
@@ -297,10 +296,8 @@ export default function Escolas() {
             </div>
             <div className="field">
               <label htmlFor="adminPassword">Senha inicial *</label>
-              <input
+              <PasswordInput
                 id="adminPassword"
-                className="input"
-                type="password"
                 minLength={8}
                 value={form.adminPassword}
                 onChange={(e) => setForm({ ...form, adminPassword: e.target.value })}
