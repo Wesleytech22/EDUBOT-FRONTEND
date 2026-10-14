@@ -14,6 +14,36 @@ function initials(name) {
     .toUpperCase();
 }
 
+// Foto tirada pela câmera do celular passa fácil de 2 MB (limite da API).
+// Reduz para no máximo 800 px no maior lado e salva em JPEG antes de enviar.
+// Se o navegador não conseguir abrir a imagem, envia o arquivo original.
+const PHOTO_MAX_SIDE = 800;
+
+function resizePhoto(file) {
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, PHOTO_MAX_SIDE / Math.max(img.naturalWidth, img.naturalHeight));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(img.naturalWidth * scale);
+      canvas.height = Math.round(img.naturalHeight * scale);
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      URL.revokeObjectURL(url);
+      canvas.toBlob(
+        (blob) => resolve(blob ? new File([blob], 'foto.jpg', { type: 'image/jpeg' }) : file),
+        'image/jpeg',
+        0.85
+      );
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve(file);
+    };
+    img.src = url;
+  });
+}
+
 export default function SobreNos() {
   // Inclui o Administrador da plataforma dentro da escola que ele abriu.
   const { isAdmin } = useAuth();
@@ -46,7 +76,7 @@ export default function SobreNos() {
     setError('');
     try {
       const formData = new FormData();
-      formData.append('photo', file);
+      formData.append('photo', await resizePhoto(file));
       await api.put(`/team/${memberId}/photo`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
@@ -88,7 +118,11 @@ export default function SobreNos() {
                       type="file"
                       accept="image/*"
                       hidden
-                      onChange={(e) => handlePhotoChange(member.id, e.target.files?.[0])}
+                      onChange={(e) => {
+                        handlePhotoChange(member.id, e.target.files?.[0]);
+                        // Permite escolher o mesmo arquivo de novo depois de um erro.
+                        e.target.value = '';
+                      }}
                     />
                     <button
                       type="button"
