@@ -188,6 +188,10 @@ export default function PainelEscolar() {
   const filtered = Boolean(summary?.filtered);
   const hasStudents = Boolean(summary && summary.totalStudents > 0);
   const lastRunFailed = syncStatus?.lastRun?.status === 'falha';
+  // A sincronização conta as linhas da planilha, mas nome + série repetidos
+  // são o mesmo aluno e entram uma vez só na base.
+  const sheetRows = syncStatus?.lastRun?.status === 'sucesso' ? syncStatus.lastRun.rowsSynced : null;
+  const mergedRows = summary && sheetRows ? sheetRows - summary.baseTotal : 0;
 
   return (
     <Layout title="Painel Escolar">
@@ -253,6 +257,13 @@ export default function PainelEscolar() {
             </p>
           ) : (
             <p className="opp-hint">Nenhuma sincronização bem-sucedida ainda.</p>
+          )}
+          {mergedRows > 0 && (
+            <p className="pe-sync-warn">
+              A planilha tem {sheetRows} linhas de alunos, mas a base mostra {summary.baseTotal}: {mergedRows}{' '}
+              {mergedRows === 1 ? 'linha repetiu' : 'linhas repetiram'} nome e série de outro aluno e{' '}
+              {mergedRows === 1 ? 'foi contada' : 'foram contadas'} uma vez só.
+            </p>
           )}
           {lastRunFailed && (
             <p className="pe-sync-fail">
