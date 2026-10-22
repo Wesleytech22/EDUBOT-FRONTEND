@@ -63,8 +63,7 @@ const RELEASE_NOTES = {
   inProgress: [],
   upcoming: [],
   testAccess: [
-    // Sem senha na tela: o Administrador da plataforma acessa todas as escolas.
-    { role: 'Administrador da Plataforma', email: 'lumenforgeti+admin@gmail.com' },
+    { role: 'Administrador da Plataforma', email: 'lumenforgeti+admin@gmail.com', password: '12345678' },
     { role: 'Administrador da Escola', email: 'wealeyr537@gmail.com', password: 'LumenforgeDPTI' },
     { role: 'Equipe da Escola', email: 'wealeyr6@gmail.com', password: 'LumenforgeDPTI' },
   ],
@@ -180,7 +179,7 @@ export default function Login() {
                 {RELEASE_NOTES.testAccess.map((item) => (
                   <li key={item.role}>
                     <strong>{item.role}</strong>
-                    <span>{item.email} · {item.password || 'senha com a equipe LumenForge'}</span>
+                    <span>{item.email} · {item.password}</span>
                   </li>
                 ))}
               </ul>
