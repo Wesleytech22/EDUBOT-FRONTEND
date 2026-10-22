@@ -63,7 +63,7 @@ const RELEASE_NOTES = {
   inProgress: [],
   upcoming: [],
   testAccess: [
-    { role: 'Administrador da Plataforma', email: 'lumenforgeti+admin@gmail.com', password: '12345678' },
+    { role: 'Administrador da Plataforma', email: 'lumenforgeti@gmail.com', password: '12345678' },
     { role: 'Administrador da Escola', email: 'wealeyr537@gmail.com', password: 'LumenforgeDPTI' },
     { role: 'Equipe da Escola', email: 'wealeyr6@gmail.com', password: 'LumenforgeDPTI' },
   ],
