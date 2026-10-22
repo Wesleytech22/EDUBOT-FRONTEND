@@ -12,63 +12,56 @@ const LOGOUT_REASON_MESSAGES = {
 const RESET_SUCCESS_TIMEOUT_MS = 6000;
 
 const RELEASE_NOTES = {
-  sprint: 'Sprint 04',
-  updatedAt: '05/10/2026',
+  sprint: 'Sprint 05',
+  updatedAt: '21/10/2026',
+  note: 'A Sprint 05 é a última etapa do projeto: o que estava previsto para a Sprint 06 (Painel Escolar e Google Sheets) foi antecipado e entregue nesta sprint.',
   shipped: [
     {
-      title: 'Chatbot com opt-in e opt-out',
+      title: 'Segurança · Backups',
       description:
-        'Alunos e famílias se inscrevem com ENTRAR e cancelam com SAIR. MENU lista as oportunidades ativas, e perguntas pelo nome de uma oportunidade são respondidas automaticamente.',
+        'Backup diário automático do banco de dados escolar, guardado num banco permanente, com histórico e botão de backup sob demanda para o Administrador da plataforma.',
     },
     {
-      title: 'Nova tela "Atendimento"',
+      title: 'Várias escolas na mesma plataforma',
       description:
-        'Dúvidas que o chatbot não resolve (ou em que o contato pede ATENDENTE) chegam numa fila para a equipe responder e marcar como atendidas.',
+        'Nova tela Escolas: o Administrador da plataforma cadastra cada escola e suas contas, e cada escola tem o próprio painel, oportunidades, chatbot e equipe.',
     },
     {
-      title: 'Métricas de engajamento completas',
+      advancedFrom: 'Sprint 06',
+      title: 'Integração com o Google Sheets',
       description:
-        'Respostas recebidas, dúvidas mais frequentes e taxa de resposta por oportunidade, com filtros por período e por oportunidade.',
+        'O Administrador conecta a planilha da escola por link ou arquivo CSV, informa aba e intervalo e confere uma prévia da leitura antes de salvar.',
     },
     {
-      title: 'Anexo da oportunidade enviado ao aluno',
+      advancedFrom: 'Sprint 06',
+      title: 'Sincronização automática da planilha',
       description:
-        'O arquivo anexado à oportunidade passa a ser enviado de verdade no disparo, e o campo de anexo aceita upload de arquivo.',
+        'Frequência de sincronização configurável, botão "Sincronizar agora", histórico de sucessos e falhas e aviso da próxima sincronização.',
     },
     {
-      title: 'Correções em Oportunidades',
+      advancedFrom: 'Sprint 06',
+      title: 'Painel Escolar',
       description:
-        'O filtro por público-alvo "Todos" ficou exato, links longos não quebram mais o layout e oportunidades já disparadas não voltam a rascunho.',
+        'Frequência e situação de cada aluno calculadas pelas presenças e faltas (Regular, Atenção e Risco), com busca, filtros, cartões que seguem os filtros, paginação e exportação em CSV.',
     },
     {
-      title: 'Marca Lumen Forge no login e no menu lateral',
-      description: 'A identidade visual do time passa a aparecer no fundo do login e da sidebar.',
+      advancedFrom: 'Sprint 06',
+      title: 'Bonificação do aluno pelo Telegram',
+      description: 'O aluno ganha 10 pontos ao entrar no bot e 5 pontos por mensagem enviada, visíveis no Painel Escolar.',
+    },
+    {
+      advancedFrom: 'Sprint 06',
+      title: 'Resumo do Painel Escolar no Dashboard',
+      description: 'Total de alunos, frequência média e quantos estão em risco logo na primeira tela.',
+    },
+    {
+      title: 'Correções',
+      description:
+        'Login e "Esqueci minha senha" sem diferenciar maiúsculas no e-mail, semanas das Métricas no fuso de Manaus, foto da equipe enviada pelo celular e senha visível no cadastro de contas.',
     },
   ],
-  inProgress: [
-    {
-      title: 'Disparo de oportunidades pelo Telegram',
-      description:
-        'O chatbot já atende pelo Telegram; o envio em massa das oportunidades por esse canal está na fase final de publicação.',
-    },
-    {
-      title: 'Estrela da Cruzeiro na identidade visual do produto',
-      description: 'Ainda em desenvolvimento.',
-    },
-  ],
-  upcoming: [
-    { sprint: 'Sprint 05', title: 'Segurança da informação: backup automático do banco de dados escolar' },
-    {
-      sprint: 'Sprint 05',
-      title: 'Integração com o Google Sheets: o Administrador conecta a planilha da escola (link ou arquivo CSV) pela própria plataforma',
-    },
-    { sprint: 'Sprint 05', title: 'Sincronização automática dos dados da planilha, com histórico de sucessos e falhas' },
-    { sprint: 'Sprint 05', title: 'Painel Escolar: frequência e situação dos alunos, com busca, filtros e exportação em CSV' },
-    {
-      sprint: 'Sprint 05',
-      title: 'Várias escolas na mesma plataforma: cada escola com o próprio painel, oportunidades, chatbot e equipe',
-    },
-  ],
+  inProgress: [],
+  upcoming: [],
   testAccess: [
     { role: 'Administrador', email: 'wealeyr537@gmail.com', password: 'LumenforgeDPTI' },
     { role: 'Equipe da Escola', email: 'wealeyr6@gmail.com', password: 'LumenforgeDPTI' },
@@ -140,7 +133,13 @@ export default function Login() {
               <ul className="login-release-notes-list">
                 {RELEASE_NOTES.shipped.map((item) => (
                   <li key={item.title}>
-                    <span className="badge login-release-badge login-release-badge-new">Novo</span>
+                    {item.advancedFrom ? (
+                      <span className="badge login-release-badge login-release-badge-advanced">
+                        Antecipado · {item.advancedFrom}
+                      </span>
+                    ) : (
+                      <span className="badge login-release-badge login-release-badge-new">Novo</span>
+                    )}
                     <div>
                       <p className="login-release-item-title">{item.title}</p>
                       <p className="login-release-item-desc">{item.description}</p>
@@ -158,15 +157,21 @@ export default function Login() {
                 ))}
               </ul>
 
-              <p className="login-release-notes-next-label">Próxima sprint · última etapa do projeto</p>
-              <ul className="login-release-notes-next-list">
-                {RELEASE_NOTES.upcoming.map((item) => (
-                  <li key={item.title}>
-                    <span className="badge login-release-badge login-release-badge-next">{item.sprint}</span>
-                    {item.title}
-                  </li>
-                ))}
-              </ul>
+              {RELEASE_NOTES.note && <p className="login-release-notes-note">{RELEASE_NOTES.note}</p>}
+
+              {RELEASE_NOTES.upcoming.length > 0 && (
+                <>
+                  <p className="login-release-notes-next-label">Próxima sprint</p>
+                  <ul className="login-release-notes-next-list">
+                    {RELEASE_NOTES.upcoming.map((item) => (
+                      <li key={item.title}>
+                        <span className="badge login-release-badge login-release-badge-next">{item.sprint}</span>
+                        {item.title}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
 
               <p className="login-release-notes-next-label">Acessos para teste do portal</p>
               <ul className="login-release-notes-test-access">
