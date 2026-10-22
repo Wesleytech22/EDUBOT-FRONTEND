@@ -158,6 +158,18 @@
   color: var(--a600);
 }
 
+.login-release-badge-advanced {
+  background: var(--a100);
+  color: var(--a600);
+}
+
+.login-release-notes-note {
+  margin: 12px 0 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #dfe4f2;
+}
+
 .login-release-badge-next {
   background: rgba(255, 255, 255, 0.14);
   color: #dfe4f2;
