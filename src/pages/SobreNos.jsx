@@ -45,8 +45,9 @@ function resizePhoto(file) {
 }
 
 export default function SobreNos() {
-  const { user } = useAuth();
-  const isAdmin = user?.role === 'administrador';
+  // Só o Administrador da plataforma troca as fotos; o Administrador da
+  // escola e a Equipe da Escola apenas visualizam.
+  const { isPlatformAdmin } = useAuth();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -111,7 +112,7 @@ export default function SobreNos() {
                   <div className="sobre-photo sobre-photo-placeholder">{initials(member.name)}</div>
                 )}
 
-                {isAdmin && (
+                {isPlatformAdmin && (
                   <>
                     <input
                       ref={(el) => (fileInputs.current[member.id] = el)}

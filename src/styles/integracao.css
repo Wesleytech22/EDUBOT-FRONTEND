@@ -1,0 +1,189 @@
+@import './tokens.css';
+
+.int-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 20px;
+  /* "Origem dos dados" e "Prévia de leitura" com a mesma altura, lado a lado. */
+  align-items: stretch;
+}
+
+/* Sem min-width: 0, o conteúdo largo (a tabela da prévia) estica o cartão
+   além da coluna do grid em vez de rolar dentro dele. */
+.int-grid > .card {
+  min-width: 0;
+}
+
+.int-grid h3 {
+  margin: 0 0 2px;
+}
+
+.int-mode-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  background: var(--alt);
+  border: 1px solid var(--bd);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  margin-bottom: 20px;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.int-mode-btn {
+  border: none;
+  background: transparent;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--t600);
+  cursor: pointer;
+}
+
+.int-mode-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.int-mode-btn-active {
+  background: var(--surface);
+  color: var(--t900);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08);
+}
+
+.int-form .btn {
+  margin-bottom: 12px;
+}
+
+.int-success {
+  color: var(--g600);
+  font-size: 13px;
+}
+
+.int-preview-msg {
+  margin-top: 16px;
+}
+
+/* O cartão da prévia acompanha a altura do ao lado: a mensagem inicial
+   ocupa o espaço que sobra, centralizada. */
+.int-preview {
+  display: flex;
+  flex-direction: column;
+}
+
+.int-preview > .btn {
+  align-self: flex-start;
+}
+
+.int-preview-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 16px;
+  padding: 20px;
+  border: 1px dashed var(--bd);
+  border-radius: var(--radius-sm);
+  background: var(--alt);
+  text-align: center;
+}
+
+.int-preview-empty strong {
+  font-size: 14px;
+  color: var(--t900);
+}
+
+.int-preview-empty span {
+  font-size: 13px;
+  color: var(--t600);
+}
+
+.int-preview-scroll {
+  max-height: 360px;
+  overflow: auto;
+  border: 1px solid var(--bd);
+  border-radius: var(--radius-sm);
+}
+
+.int-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.int-table td {
+  padding: 10px 12px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--bd);
+  color: var(--t600);
+  white-space: nowrap;
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Primeira linha (normalmente o cabeçalho da planilha) fixa ao rolar. */
+.int-table tr:first-child td {
+  color: var(--t900);
+  font-weight: 500;
+  position: sticky;
+  top: 0;
+  background: var(--alt);
+}
+
+.int-sync {
+  margin-top: 20px;
+}
+
+.int-sync-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.int-sync-head h3 {
+  margin: 0 0 2px;
+}
+
+.int-sync-next {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--b700);
+  margin: 6px 0 0;
+}
+
+.int-sync-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.int-sync-actions .btn {
+  white-space: nowrap;
+}
+
+.int-sync-actions select {
+  width: auto;
+  min-width: 200px;
+}
+
+.int-run-detail {
+  max-width: 480px;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 900px) {
+  .int-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .int-sync-head,
+  .int-sync-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

@@ -7,20 +7,31 @@ const NAV_ITEMS = [
   { to: '/oportunidades', label: 'Oportunidades' },
   { to: '/metricas', label: 'Métricas' },
   { to: '/atendimento', label: 'Atendimento' },
-  // Módulos ainda não liberados: "sprint" informa no tooltip quando chegam.
-  { to: '/painel-escolar', label: 'Painel Escolar', disabled: true, sprint: 'Sprint 05' },
-  { to: '/integracao', label: 'Integração', disabled: true, sprint: 'Sprint 05' },
+  { to: '/painel-escolar', label: 'Painel Escolar' },
+  { to: '/integracao', label: 'Integração' },
   { to: '/sobre', label: 'Sobre Nós' },
 ];
 
+// Multi-escola — o Administrador da plataforma tem a lista de escolas e os
+// backups (que cobrem o banco de todas as escolas) no topo, e só vê os
+// módulos de escola depois de abrir uma delas.
+const PLATFORM_ITEMS = [
+  { to: '/escolas', label: 'Escolas' },
+  { to: '/backups', label: 'Backups' },
+];
+const GLOBAL_PATHS = ['/sobre'];
+
 export default function Sidebar() {
-  const { logout } = useAuth();
+  const { logout, isPlatformAdmin, activeSchool } = useAuth();
+  const visibleItems = isPlatformAdmin
+    ? [...PLATFORM_ITEMS, ...NAV_ITEMS.filter((item) => activeSchool || GLOBAL_PATHS.includes(item.to))]
+    : NAV_ITEMS;
 
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">EduBot</div>
       <nav className="sidebar-nav">
-        {NAV_ITEMS.map((item) =>
+        {visibleItems.map((item) =>
           item.disabled ? (
             <span
               key={item.to}
